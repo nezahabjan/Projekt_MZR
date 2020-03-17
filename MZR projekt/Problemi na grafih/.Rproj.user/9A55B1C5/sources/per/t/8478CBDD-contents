@@ -1,0 +1,2 @@
+source.with.encoding("../libraries/lib.R", encoding=utf8)
+
