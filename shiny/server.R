@@ -15,10 +15,10 @@ server <- function(input, output) {
   observeEvent(input$button1, {
     output$graf <- renderPlot({
    
-      net <- narisi("", input$dir, input$st_ogl, input$Dim_x, input$Dim_y)$network
+      net <- narisi("", input$dir, input$ogl, input$Dim_x, input$Dim_y)$network
       
       plot.igraph(net)
-  print(input$dir, input$st_ogl, input$Dim_x)
+  print(input$dir, input$ogl, input$Dim_x)
    
     })
   })
