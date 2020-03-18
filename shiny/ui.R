@@ -1,11 +1,12 @@
-source("C:\Users\Neža\Desktop\Neža šola\MZR projekt\Problemi na grafih\Projekt_MZR-master\libraries.R")
 
+library(shiny)
+library(shinyMatrix)
 
-#samo primer
+# Define UI for app that draws a histogram ----
 ui <- fluidPage(
   
   # App title ----
-  titlePanel("Hello Shiny!"),
+  titlePanel("Lastnosti grafov in problemi na njih"),
   
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -14,20 +15,52 @@ ui <- fluidPage(
     sidebarPanel(
       
       # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
-                  label = "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
+      numericInput(inputId = "Dim_x",
+                  label = "Izberi x dimenzijo matrike",
+                  value = 4 ),
       
-    ),
-    
-    # Main panel for displaying outputs ----
+      numericInput(inputId = "Dim_y",
+                   label = "Izberi y dimenzijo matrike",
+                   value = 5 ),
+      
+      numericInput(inputId = "ogl",
+                   label = "Izberi stevilo oglisc grafa",
+                   value = 6 ),
+      
+      
+      selectInput("dir", h3("Izberi usmerjenost grafa"),
+                   choices = list("nevem" = "nevem"," yes" = "yes", "no" = "no")
+                                  ),
+      
+      actionButton("button1", "Submit")
+
+      ),
+
+      
+      
     mainPanel(
+
+       tabPanel("Graf", plotOutput("graf"))
+      )
       
-      # Output: Histogram ----
-      plotOutput(outputId = "distPlot")
+      
       
     )
+  #shinyApp(ui=ui, server=server)  
   )
-)
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

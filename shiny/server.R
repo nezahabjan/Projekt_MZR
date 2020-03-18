@@ -1,7 +1,4 @@
-source("../libraries/lib.r")
 
-
-#samo primer
 server <- function(input, output) {
   
   # Histogram of the Old Faithful Geyser Data ----
@@ -12,15 +9,28 @@ server <- function(input, output) {
   # 1. It is "reactive" and therefore should be automatically
   #    re-executed when inputs (input$bins) change
   # 2. Its output type is a plot
-  output$distPlot <- renderPlot({
-    
-    x    <- faithful$waiting
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    hist(x, breaks = bins, col = "#75AADB", border = "white",
-         xlab = "Waiting time to next eruption (in mins)",
-         main = "Histogram of waiting times")
-    
+  
+  
+  
+  observeEvent(input$button1, {
+    output$graf <- renderPlot({
+   
+      net <- narisi("", input$dir, input$st_ogl, input$Dim_x, input$Dim_y)$network
+      
+      plot.igraph(net)
+  print(input$dir, input$st_ogl, input$Dim_x)
+   
+    })
   })
   
+  
+  
 }
+  
+  
+  
+  
+  
+
+
+

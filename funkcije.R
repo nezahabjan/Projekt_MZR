@@ -1,19 +1,19 @@
 
-## v tej datoteki bom beležila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
+## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
 # najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
 
 
 
 
 # A) kako narisemo graf?
-# zacetna vzpostavitev poljubnega grafa preko incidencne matrike, ta vsebuje število povezav od clena v vrstici do tistega v stolpcu
-v1 <- c(0,0,0,0,0)
-v2 <- c(0,0,0,1,0)
-v3 <- c(0,1,1,0,1)
-v4 <- c(0,1,0,1,0)
-v5 <- c(0,0,1,0,1)
+# zacetna vzpostavitev poljubnega grafa preko incidencne matrike, ta vsebuje ?tevilo povezav od clena v vrstici do tistega v stolpcu
+#v1 <- c(0,0,0,0,0)
+#v2 <- c(0,0,0,1,0)
+#v3 <- c(0,1,1,0,1)
+#v4 <- c(0,1,0,1,0)
+#v5 <- c(0,0,1,0,1)
 
-inc_matrika <- rbind(v1, v2, v3, v4, v5)
+#inc_matrika <- rbind(v1, v2, v3, v4, v5)
 
 narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   # matrika je lahko vstavljena ali ne
@@ -22,24 +22,24 @@ narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   #st_stolp in st_vrst prideta v postev le, ko je matrika prazna in zelimo neusmerjen graf
   
   if (directed == "yes"){
-    # usmerjen graf se pravilno izrise, zanj potrebujemo kvadratno matriko s števili povezav, vrstice in stolpci so enako poimenovani, vsaka povezava gre iz vrstic v stolpce
+    # usmerjen graf se pravilno izrise, zanj potrebujemo kvadratno matriko s ?tevili povezav, vrstice in stolpci so enako poimenovani, vsaka povezava gre iz vrstic v stolpce
     if (matrika !=""){
       #ce je argument matrika izpolnjen ga upostevamo in uporabimo vstavljen graf uporabnika
       #ta je OK
       data <- matrika
-      rownames(data) = colnames(data) = letters[1:dim(inc_matrika)[1]]
+      rownames(data) = colnames(data) = letters[1:dim(matrika)[1]]
       network <- graph_from_adjacency_matrix(data)
       plot(network)
     } else {
       #sicer si program sam izbere nakljucno matriko izbranih dimenzij in izrise njej ustrezen graf
       #ta je OK
-      data <- matrix(sample(0:1, st_ogl, replace=TRUE), st_ogl, st_ogl)
+      data <- matrix(sample(0:1, st_ogl*st_ogl, replace=TRUE), st_ogl, st_ogl)
       colnames(data) = rownames(data) = letters[1:st_ogl]
       network <- graph_from_adjacency_matrix(data)
       plot(network)
     }
   } else if (directed == "no"){
-    # pri neusmerjenih grafih imamo matriko, ki ni nujno kvadratna, v njej je 1 èe povezava med tockama obstaja in 0 sicer
+    # pri neusmerjenih grafih imamo matriko, ki ni nujno kvadratna, v njej je 1 ?e povezava med tockama obstaja in 0 sicer
     if (matrika !=""){
       # ta je OK
       data <- matrika
@@ -150,7 +150,7 @@ graf <- narisi("", "no", 4, 4, 3)
       
     }
     
-# funkcija dela v redu ampak potrebno je izloèiti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
+# funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
 najdi_cikle = function(graf) {
   Cikli = NULL
   for(v1 in V(graf$network)) {
@@ -180,8 +180,8 @@ najdi_cikle = function(graf) {
 
 
 
-# E) REŠEVANJE PROBLEMOV:
-# 1) PROBLEM NAJDALJŠE IN NAJKRAJŠE POTI MED IZBRANIMA VOZLISCEMA
+# E) RE?EVANJE PROBLEMOV:
+# 1) PROBLEM NAJDALJ?E IN NAJKRAJ?E POTI MED IZBRANIMA VOZLISCEMA
 
 max_min_pot <- function(v1, v2, graf){
   
