@@ -12,33 +12,51 @@ server <- function(input, output, session) {
   #atribute grafa mora vnesti
   observeEvent( input$dir, {
     
-    if (input$dir == "yes"){
-      output$text_1 <- renderText({ "Graf bo usmerjen, torej doloci se stevilo oglisc!" })
-    } else if (input$dir == "no"){
-      output$text_1 <- renderText({ "Graf bo neusmerjen, torej doloci dimenziji povezavne matrike!" }) 
+    if (input$dir == 2){
+      output$text_1 <- renderText({ "Graf bo usmerjen!" })
+    } else if (input$dir == 1){
+      output$text_1 <- renderText({ "Graf bo neusmerjen!" }) 
     } else {
-      output$text_1 <- renderText({ "Preden nadaljujes moras dolociti usmerjenost grafa!" }) 
+      output$text_1 <- renderText({ "Prosim, izpolni zgornje polje!" }) 
     }
   })
   
 
   observeEvent( input$generate, {
     
-    if (input$generate == "yes"){
+    if (input$generate == 2){
       output$text_2 <- renderText({ "Super, podati mi moras le izbrane atribute grafa!" })
-    } else if (input$generate == "no"){
-      output$text_2 <- renderText({ "Sedaj moras vnesti se povezavno matriko svojega grafa :)" })
+    } else if (input$generate == 1){
+      output$text_2 <- renderText({ "Torej moras vnesti se povezavno matriko svojega grafa :)" })
     } else {
       output$text_2 <- renderText({ "Prosim, izpolni zgornje polje!" })
     }
       
   })
   
+  
+  
+  observeEvent( input$button2, {
+    if (input$Dim_x_1 > 0 & input$Dim_y_1 > 0){
+    
+    p("Sedaj lahko vneses elemente povezavne matrike")
+    
+      lapply((1:input$Dim_x_1), function(i) {
+      textInput(paste0("v",i), paste0("v",i), "0,1,2")})
+    
+    } else {
+      
+      p("Ponovno izpolni dimenziji matrike")
+      
+    }
+  })
+    
+  
 
   
   observeEvent( input$button1, {
     
-    if (input$generate == "yes"){
+    if (input$generate == 2){
       
       output$graf <- renderPlot({
         net <- narisi("", input$dir, input$ogl, input$Dim_x, input$Dim_y)$network
@@ -47,7 +65,7 @@ server <- function(input, output, session) {
       })
       
     
-    } else if (input$generate == "no"){
+    } else if (input$generate == 1){
 
       matrika <- as.matrix(lapply(1:input$Dim_x, function(i) 
         as.numeric(unlist(strsplit(input[[paste0("v",i)]])))))
@@ -82,45 +100,54 @@ body <- dashboardBody(
               
               
               selectInput("generate", "Zelis, da ti ponudim nakljucen graf po izbranih atributih?",
-                          choices = list("no" = "no","yes" = "yes", "izberi"="izberi"), selected = "izberi"),
+                          choices = list("Ne, graf imam ze izbran" = 1,"Da, prosim" = 2, "/"=3), selected = 3),
               
               textOutput("text_2"),
               
               
               selectInput("dir", "Izberi usmerjenost grafa",
-                          choices = list("yes" = "yes", "no" = "no", "nevem" = "nevem"), selected = "nevem"),
+                          choices = list("Graf ni usmerjen" = 1, "Graf je usmerjen" = 2, "nevem" = 3), selected = 3),
               
               textOutput("text_1"),
               
               
           conditionalPanel(
-                condition = "input.dir == 'yes' || input.generate == 'yes'",
+                condition = "input.dir == '2' && input.generate == '2'",
                 numericInput(inputId = "ogl",
                              label = "Izberi stevilo oglisc grafa",
                              value = 0 )
                 ),
           
+          
+          
           conditionalPanel(
-            condition = "input.dir == 'no'",
-            numericInput(inputId = "Dim_x",
-                         label = "Izberi x dimenzijo matrike",
+            condition = "input.generate == '1'",
+            numericInput(inputId = "Dim_x_1",
+                         label = "Izberi x dimenzijo povezavne matrike",
                          value = 0 ),
             
-            numericInput(inputId = "Dim_y",
-                         label = "Izberi y dimenzijo matrike",
+            numericInput(inputId = "Dim_y_1",
+                         label = "Izberi y dimenzijo povezavne matrike",
+                         value = 0 ),
+            
+            actionButton("button2", "Vnesi elemente")
+   
+          ),
+          
+
+          conditionalPanel(
+            condition = "input.dir == '1' && input.generate == '2'",
+            p("V redu, potreboval bom le zeljeni dimenziji povezavne matrike"),
+            numericInput(inputId = "Dim_x_2",
+                         label = "Izberi x dimenzijo",
+                         value = 0 ),
+            
+            numericInput(inputId = "Dim_y_2",
+                         label = "Izberi y dimenzijo",
                          value = 0 )
           ),
 
-          
-          conditionalPanel(
-            condition = "input.generate == 'no'",
-            lapply((1:2), function(i) {
-              textInput(paste0("v",i), paste0("v",i), "0,1,2")})
-
-          ),
-              
-          
-              actionButton("button1", "Submit")
+              actionButton("button1", "Narisi")
               
             ),
             
