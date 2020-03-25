@@ -17,11 +17,11 @@
 
 narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   # matrika je lahko vstavljena ali ne
-  # directed je lahko "yes" ali "no"
+  # directed je lahko "yes" (2) ali "no" (1)
   #st_ogl pride v postev le, ko je matrika prazna in zelimo usmerjen graf
   #st_stolp in st_vrst prideta v postev le, ko je matrika prazna in zelimo neusmerjen graf
   
-  if (directed == "yes"){
+  if (directed == "2"){
     # usmerjen graf se pravilno izrise, zanj potrebujemo kvadratno matriko s ?tevili povezav, vrstice in stolpci so enako poimenovani, vsaka povezava gre iz vrstic v stolpce
     if (matrika !=""){
       #ce je argument matrika izpolnjen ga upostevamo in uporabimo vstavljen graf uporabnika
@@ -38,7 +38,7 @@ narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
       network <- graph_from_adjacency_matrix(data)
       plot(network)
     }
-  } else if (directed == "no"){
+  } else if (directed == "1"){
     # pri neusmerjenih grafih imamo matriko, ki ni nujno kvadratna, v njej je 1 ?e povezava med tockama obstaja in 0 sicer
     if (matrika !=""){
       # ta je OK
@@ -63,7 +63,7 @@ narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
 
 
 # B) koliksne so stopnje oglisc?
-graf <- narisi("", "yes", 4, 5, 2)
+#graf <- narisi("", "yes", 4, 5, 2)
 stopnje <- function(graf){
   seznam <- list()
   network <- graf$network
@@ -93,7 +93,7 @@ stopnje <- function(graf){
 
 
 # C) koliko povezav vsebuje?
-graf <- narisi(inc_matrika, "yes", 4, 5, 2)
+#graf <- narisi(inc_matrika, "yes", 4, 5, 2)
 povezave <- function(graf) {
   stevilo_povezav <- length(E(graf$network))
   return(stevilo_povezav)
@@ -102,8 +102,8 @@ povezave <- function(graf) {
 
 
 # D) ali ima nas graf cikle?
-graf <- narisi("", "no", 4, 4, 3)
-#cikli <- function(graf){
+#graf <- narisi("", "no", 4, 4, 3)
+cikli <- function(graf){
   matrika <- graf$matrika
   network <- graf$network
   obiskani<- list()
@@ -151,7 +151,7 @@ graf <- narisi("", "no", 4, 4, 3)
     }
     
 # funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
-najdi_cikle = function(graf) {
+najdi_cikle <- function(graf) {
   Cikli = NULL
   for(v1 in V(graf$network)) {
     #gremo po vseh vozliscih grafa in najprej preverimo ali imajo stopnjo >0
@@ -184,12 +184,6 @@ najdi_cikle = function(graf) {
 # 1) PROBLEM NAJDALJ?E IN NAJKRAJ?E POTI MED IZBRANIMA VOZLISCEMA
 
 max_min_pot <- function(v1, v2, graf){
-  
-  
-  
-  
-  
-  
   
 }
 

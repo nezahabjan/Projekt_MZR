@@ -1,27 +1,12 @@
-
-library(shiny)
-library(shinyMatrix)
+source("../libraries/lib.R")
+source("../funkcije.R")
 
 
 
 ## SERVER funkcija
 server <- function(input, output, session) {
-  
-  
-  #najprej cakamo, da uporabnik izbere usmerjenost grafa in nato mu svetujemo, katere
-  #atribute grafa mora vnesti
-  observeEvent( input$dir, {
-    
-    if (input$dir == 2){
-      output$text_1 <- renderText({ "Graf bo usmerjen!" })
-    } else if (input$dir == 1){
-      output$text_1 <- renderText({ "Graf bo neusmerjen!" }) 
-    } else {
-      output$text_1 <- renderText({ "Prosim, izpolni zgornje polje!" }) 
-    }
-  })
-  
 
+  # uporabnika vprasamo ali ima graf ze izbran ali naj mu ga predlaga program
   observeEvent( input$generate, {
     
     if (input$generate == 2){
@@ -36,46 +21,64 @@ server <- function(input, output, session) {
   
   
   
+  #nato cakamo, da uporabnik izbere usmerjenost grafa in mu svetujemo, katere
+  #atribute mora vnesti
+  observeEvent( input$dir, {
+    
+    if (input$dir == 2){
+      output$text_1 <- renderText({ "Graf bo usmerjen!" })
+    } else if (input$dir == 1){
+      output$text_1 <- renderText({ "Graf bo neusmerjen!" }) 
+    } else {
+      output$text_1 <- renderText({ "Prosim, izpolni zgornje polje!" }) 
+    }
+  })
+  
+  
+  
+  # ko klikne na gumb, ki daje znak, da je ze koncal z izbiro atributov, mu ponudimo prazno matriko ustrezne velikosti
   observeEvent( input$button2, {
-    if (input$Dim_x_1 > 0 & input$Dim_y_1 > 0){
+    if (input$Dim_x_1 > 0 & input$Dim_y_1 > 0 & input$generate == 1){
+      
+    output$text_3 <- renderText({
+      "Sedaj lahko vneses elemente povezavne matrike"})
     
-    p("Sedaj lahko vneses elemente povezavne matrike")
-    
-      lapply((1:input$Dim_x_1), function(i) {
-      textInput(paste0("v",i), paste0("v",i), "0,1,2")})
+      output$ui <- renderUI({
+         lapply((1:input$Dim_x_1), function(i) {
+         textInput(paste0("v",i), paste0("v",i), "0,1,2")})
+      })
     
     } else {
-      
-      p("Ponovno izpolni dimenziji matrike")
-      
+      output$text_3 <- renderText({
+        "Prosim, ponovno preveri dimenziji matrike"})
+
     }
   })
     
   
 
-  
+  # nato mu narocimo, naj narise graf
   observeEvent( input$button1, {
     
     if (input$generate == 2){
       
       output$graf <- renderPlot({
-        net <- narisi("", input$dir, input$ogl, input$Dim_x, input$Dim_y)$network
+       
+        net <- narisi("", input$dir, input$ogl, input$Dim_x_2, input$Dim_y_2)$network
         plot.igraph(net)
         
       })
-      
     
     } else if (input$generate == 1){
 
-      matrika <- as.matrix(lapply(1:input$Dim_x, function(i) 
-        as.numeric(unlist(strsplit(input[[paste0("v",i)]])))))
+      matrika <- matrix(c(as.numeric(sapply(1:input$Dim_x_1, function(i) 
+        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$Dim_x_1, input$Dim_y_1, byrow=TRUE)
       
       output$graf <- renderPlot({
-        net <- narisi(matrika, input$dir, input$ogl, input$Dim_x, input$Dim_y)$network
+        net <- narisi(matrika, input$dir, input$ogl, input$Dim_x_1, input$Dim_y_1)$network
         plot.igraph(net)
         
       })
-
     }
   })
 }
@@ -98,28 +101,30 @@ body <- dashboardBody(
             fluidRow(sidebarPanel(
               h3("Dobrodosli v svetu grafov!"),
               
-              
               selectInput("generate", "Zelis, da ti ponudim nakljucen graf po izbranih atributih?",
                           choices = list("Ne, graf imam ze izbran" = 1,"Da, prosim" = 2, "/"=3), selected = 3),
-              
               textOutput("text_2"),
-              
               
               selectInput("dir", "Izberi usmerjenost grafa",
                           choices = list("Graf ni usmerjen" = 1, "Graf je usmerjen" = 2, "nevem" = 3), selected = 3),
-              
               textOutput("text_1"),
               
-              
+          
+          # v primeru da zelimo zgeneriran neusmerjen graf, moramo podati stevilo zeljenih oglisc        
           conditionalPanel(
                 condition = "input.dir == '2' && input.generate == '2'",
                 numericInput(inputId = "ogl",
                              label = "Izberi stevilo oglisc grafa",
-                             value = 0 )
+                             value = 0 ),
                 ),
           
+          conditionalPanel(
+            condition = "input.ogl == '0' && input.button1 == 'TRUE'",
+            p("Prosim, preveri ponovno izbrano stevilo oglisc!")
+          ),
           
           
+          # v primeru, da imamo graf ze izbran, programu podamo dimenzije povezavne matrike
           conditionalPanel(
             condition = "input.generate == '1'",
             numericInput(inputId = "Dim_x_1",
@@ -135,6 +140,7 @@ body <- dashboardBody(
           ),
           
 
+          # v primeru, da zelimo zgeneriran usmerjen graf, podamo dimenziji povezavne matrike
           conditionalPanel(
             condition = "input.dir == '1' && input.generate == '2'",
             p("V redu, potreboval bom le zeljeni dimenziji povezavne matrike"),
@@ -153,9 +159,18 @@ body <- dashboardBody(
             
             mainPanel( 
               
+              textOutput("text_3"),
+              
+              uiOutput("ui"),
+              
               tabPanel("Graf", plotOutput("graf"))
                       
             ))),
+    
+    
+    
+    
+    
     
     
     tabItem(tabName = "lastnosti",
@@ -166,6 +181,10 @@ body <- dashboardBody(
             )),
             mainPanel(p("Tu so rezultati!")
             )),
+    
+    
+    
+    
     
     
     tabItem(tabName = "problemi",
