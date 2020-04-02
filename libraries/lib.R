@@ -6,7 +6,9 @@ library(networkD3)
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
-
+library(shinyMatrix)
+library(googleVis)
+library(TSP)
 
 
 library(shinyBS)

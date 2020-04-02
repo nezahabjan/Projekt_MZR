@@ -1,20 +1,7 @@
 
 ## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
 # najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
-
-
-
-
-# A) kako narisemo graf?
-# zacetna vzpostavitev poljubnega grafa preko incidencne matrike, ta vsebuje ?tevilo povezav od clena v vrstici do tistega v stolpcu
-#v1 <- c(0,0,0,0,0)
-#v2 <- c(0,0,0,1,0)
-#v3 <- c(0,1,1,0,1)
-#v4 <- c(0,1,0,1,0)
-#v5 <- c(0,0,1,0,1)
-
-#inc_matrika <- rbind(v1, v2, v3, v4, v5)
-
+# A) Narisemo najprej graf
 narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   # matrika je lahko vstavljena ali ne
   # directed je lahko "yes" (2) ali "no" (1)
@@ -27,7 +14,7 @@ narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
       #ce je argument matrika izpolnjen ga upostevamo in uporabimo vstavljen graf uporabnika
       #ta je OK
       data <- matrika
-      rownames(data) = colnames(data) = letters[1:dim(matrika)[1]]
+      colnames(data) = rownames(data) = letters[1:dim(matrika)[1]]
       network <- graph_from_adjacency_matrix(data)
       plot(network)
     } else {
@@ -61,36 +48,34 @@ narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   return (list("network"=network, "directed"=directed, "matrika"=data))
 }
 
-
 # B) koliksne so stopnje oglisc?
-#graf <- narisi("", "yes", 4, 5, 2)
+graf <- narisi("", "1", 6, 5, 4)
 stopnje <- function(graf){
   seznam <- list()
   network <- graf$network
   directed <- graf$directed
   matrika <- graf$matrika
-    if (directed == "no"){
+    if (directed == "1"){
       # v primeru, da imamo opravka z neusmerjenim grafom je vsaka povezava do vozlisca ena stopnja vec
       for (x in 1:length(V(network))){
         vozlisce <- names(network[[x]])
         stopnja <- length(network[[vozlisce]][[1]])
-        seznam[vozlisce] <- stopnja
+        seznam[vozlisce] <- stopnja 
       } 
-    } else if (directed =="yes"){
+    } else if (directed =="2"){
       # v primeru, ko je nas graf usmerjen, delimo stopnje na vhodne in izhodne
       #matrika_grafa <- get.adjacency(graf)
       for (element in rownames(matrika)){
       izhodna <- sum(matrika[element,])
       vhodna <- sum(matrika[,element])
-      seznam[element] <- list(c("vhodna" = vhodna, "izhodna" = izhodna))
+      #seznam <- rbind(seznam, c(element, c(vhodna, izhodna)))
+      seznam[element] <- list(c("vhodna"=vhodna, "izhodna"=izhodna))
       }
     }
   
 
   return(seznam)
 }
-
-
 
 # C) koliko povezav vsebuje?
 #graf <- narisi(inc_matrika, "yes", 4, 5, 2)
@@ -99,7 +84,6 @@ povezave <- function(graf) {
   return(stevilo_povezav)
   
 }
-
 
 # D) ali ima nas graf cikle?
 #graf <- narisi("", "no", 4, 4, 3)
@@ -152,11 +136,11 @@ cikli <- function(graf){
     
 # funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
 najdi_cikle <- function(graf) {
-  Cikli = NULL
+  Cikli = list()
   for(v1 in V(graf$network)) {
     #gremo po vseh vozliscih grafa in najprej preverimo ali imajo stopnjo >0
     if(degree(graf$network, v1, mode="in") == 0) { next }
-    #tedaj zberemo vse sosede tega vozlisca
+    #tedaj zberemo vse sosede tega vozlisca - kjer je povezava iz njega
     dobri_sosedje = neighbors(graf$network, v1, mode="out")
     dobri_sosedje = dobri_sosedje[dobri_sosedje > v1]
     for(v2 in dobri_sosedje) {
@@ -165,11 +149,10 @@ najdi_cikle <- function(graf) {
       #obdrzimo pa samo tiste, ki imajo dolzino vecjo kot 3
       kandidat = kandidat[which(sapply(kandidat, length) > 3)]
       kandidat = kandidat[sapply(kandidat, min) == sapply(kandidat, `[`, 1)]
-      Cikli <- c(Cikli, kandidat)
+      Cikli <- append(Cikli, kandidat)
     }
   }
   if (length(Cikli)!=0){
-    print("Tu so vsi cikli v tem grafu!")
     return(Cikli)
     
   } else {
@@ -179,12 +162,74 @@ najdi_cikle <- function(graf) {
 }
 
 
-
 # E) RE?EVANJE PROBLEMOV:
 # 1) PROBLEM NAJDALJ?E IN NAJKRAJ?E POTI MED IZBRANIMA VOZLISCEMA
 
 max_min_pot <- function(v1, v2, graf){
   
 }
+
+
+pripravi_vozlisca <- function(graf){
+  barve <- list()
+  ocetje <- list()
+  razdalje <- list()
+  
+  for (u in rownames(get.adjacency(graf$network))){
+    barve[u] <- "bela"
+    ocetje[u] <- 0
+    razdalje[u] <- 1000
+  }
+  return(list("barve"=barve, "razdalje"=razdalje, "ocetje"=ocetje))
+}
+
+
+dvodelnost <- function(graf, start){
+
+  matrika <- get.adjacency(graf$network)
+  barve <- rep(0,dim(matrika)[1])
+  names(barve) <- rownames(matrika)
+  k=1
+  barve[start] <- k
+  while (0 %in% barve){
+  sosedje <- neighbors(graf$network, start)
+  if (length(sosedje)>0){
+    k=k+1
+  for (sosed in sosedje){
+    barve[sosed] <- k
+    
+  }
+  
+  }
+  }
+  return (barve)
+}
+
+
+preveri_utezi <- function(matrika, utezi){
+  for (i in 1:dim(matrika)[1]){
+    for (j in 1:dim(matrika)[2]){
+      if (matrika [i,j] == 0){
+        if (utezi [i,j] != 0){
+          print("Ponovno preveri utezi!")
+        } else {
+          print("Utezi so pravilno nastavljene!")
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 

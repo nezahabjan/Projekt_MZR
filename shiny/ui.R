@@ -1,93 +1,14 @@
 source("../libraries/lib.R")
 source("../funkcije.R")
+source("server.R")
 
 
-
-## SERVER funkcija
-server <- function(input, output, session) {
-
-  # uporabnika vprasamo ali ima graf ze izbran ali naj mu ga predlaga program
-  observeEvent( input$generate, {
-    
-    if (input$generate == 2){
-      output$text_2 <- renderText({ "Super, podati mi moras le izbrane atribute grafa!" })
-    } else if (input$generate == 1){
-      output$text_2 <- renderText({ "Torej moras vnesti se povezavno matriko svojega grafa :)" })
-    } else {
-      output$text_2 <- renderText({ "Prosim, izpolni zgornje polje!" })
-    }
-      
-  })
-  
-  
-  
-  #nato cakamo, da uporabnik izbere usmerjenost grafa in mu svetujemo, katere
-  #atribute mora vnesti
-  observeEvent( input$dir, {
-    
-    if (input$dir == 2){
-      output$text_1 <- renderText({ "Graf bo usmerjen!" })
-    } else if (input$dir == 1){
-      output$text_1 <- renderText({ "Graf bo neusmerjen!" }) 
-    } else {
-      output$text_1 <- renderText({ "Prosim, izpolni zgornje polje!" }) 
-    }
-  })
-  
-  
-  
-  # ko klikne na gumb, ki daje znak, da je ze koncal z izbiro atributov, mu ponudimo prazno matriko ustrezne velikosti
-  observeEvent( input$button2, {
-    if (input$Dim_x_1 > 0 & input$Dim_y_1 > 0 & input$generate == 1){
-      
-    output$text_3 <- renderText({
-      "Sedaj lahko vneses elemente povezavne matrike"})
-    
-      output$ui <- renderUI({
-         lapply((1:input$Dim_x_1), function(i) {
-         textInput(paste0("v",i), paste0("v",i), "0,1,2")})
-      })
-    
-    } else {
-      output$text_3 <- renderText({
-        "Prosim, ponovno preveri dimenziji matrike"})
-
-    }
-  })
-    
-  
-
-  # nato mu narocimo, naj narise graf
-  observeEvent( input$button1, {
-    
-    if (input$generate == 2){
-      
-      output$graf <- renderPlot({
-       
-        net <- narisi("", input$dir, input$ogl, input$Dim_x_2, input$Dim_y_2)$network
-        plot.igraph(net)
-        
-      })
-    
-    } else if (input$generate == 1){
-
-      matrika <- matrix(c(as.numeric(sapply(1:input$Dim_x_1, function(i) 
-        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$Dim_x_1, input$Dim_y_1, byrow=TRUE)
-      
-      output$graf <- renderPlot({
-        net <- narisi(matrika, input$dir, input$ogl, input$Dim_x_1, input$Dim_y_1)$network
-        plot.igraph(net)
-        
-      })
-    }
-  })
-}
 
 
 ## UI funkcija
 sidebar <- dashboardSidebar(hr(),
-                            sidebarMenu(id="atributi",
-                                        menuItem("Atributi", tabName = "atributi", selected = TRUE)),
+                            sidebarMenu(id="vnos",
+                                        menuItem("Vnos grafa", tabName = "vnos", selected = TRUE)),
                             sidebarMenu(id="lastnosti", 
                                         menuItem("Ugotavljanje lastnosti grafa", tabName = "lastnosti")),
                             sidebarMenu(id="problemi", 
@@ -96,7 +17,8 @@ sidebar <- dashboardSidebar(hr(),
 
 body <- dashboardBody(
   tabItems(
-    tabItem(tabName = "atributi",
+
+    tabItem(tabName = "vnos",
             
             fluidRow(sidebarPanel(
               h3("Dobrodosli v svetu grafov!"),
@@ -160,9 +82,7 @@ body <- dashboardBody(
             mainPanel( 
               
               textOutput("text_3"),
-              
-              uiOutput("ui"),
-              
+              uiOutput("vnos"),
               tabPanel("Graf", plotOutput("graf"))
                       
             ))),
@@ -176,10 +96,20 @@ body <- dashboardBody(
     tabItem(tabName = "lastnosti",
             
             fluidRow(sidebarPanel(
-              h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?")
+              h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
 
-            )),
-            mainPanel(p("Tu so rezultati!")
+              radioButtons("characteristic", h3("Izberi karakteristike, ki te zanimajo"),
+                           choices = list("stopnje" = 1, "vsebovanost ciklov" = 2,
+                                          "stevilo povezav" = 3)),
+              actionButton("button3", "Poslji poizvedbo")
+              ),
+
+            mainPanel(
+              textOutput("text_4"),
+              textOutput("stopnje"),
+              textOutput("text_5"),
+              uiOutput("cikli")
+            )
             )),
     
     
@@ -190,12 +120,37 @@ body <- dashboardBody(
     tabItem(tabName = "problemi",
             
             fluidRow(sidebarPanel(
-              h3("Bi rad na svojem grafu resil kaksen problem?")
+              h3("Bi rad na svojem grafu resil kaksen problem?"),
               
-            )),
-            mainPanel(p("Tu so rezultati!")
+              selectInput("problem", "Kaj bi rad pocel s svojim grafom?",
+                          choices = list("Problem trgovskega potnika" = 1,"Iskanje najkrajse poti" = 2, "Preverjanje dvodelnosti"=3, "/"=4), selected = 4),
+
+              
+              conditionalPanel(
+                condition = "input.problem =='1'",
+                 p("Izbral si problem trgovskega potnika, za resevanje moras povezavam dolociti utezi"),
+                
+                matrixInput("utezi", matrix(0,4,5), class="numeric")
+                
+                
+              ),
+              actionButton("button4", "Resi problem")
+              
+              
+            ),
+            
+            mainPanel(
+              uiOutput("dimenzije"),
+              textOutput("text_6")
+              
+              
             ))
     ))
+
+
+)
+
+
 
 
 
