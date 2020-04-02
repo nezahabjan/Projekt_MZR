@@ -1,6 +1,8 @@
 
 ## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
-# najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
+
+
+### najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
 # A) Narisemo najprej graf
 narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   # matrika je lahko vstavljena ali ne
@@ -85,56 +87,13 @@ povezave <- function(graf) {
   
 }
 
-# D) ali ima nas graf cikle?
+# D) ali ima nas graf cikle? - funkcija je v redu za usmerjene grafe, preverja ce so usmerjeni aciklicni
 #graf <- narisi("", "no", 4, 4, 3)
-cikli <- function(graf){
-  matrika <- graf$matrika
-  network <- graf$network
-  obiskani<- list()
-  seznam_stopenj <- stopnje(graf)
-  k <- 1
-  vozlisce <- names(network[1])[k]
-    while (seznam_stopenj[[vozlisce]] == 0){
-      obiskani[vozlisce] <- "DA"
-      k = k+1
-      vozlisce <- names(network[1])[k]
-    } 
-  zacetni <- names(network[1])[k]
-  print(zacetni)
-  obiskani[zacetni] <- "DA"
-  # dobili smo prvega kandidata med vozlisci, kjer zacnemo preverjati ciklicnost
-  stars <- zacetni
-  otroci <- list()
-  cikel <- c()
-  while (length(obiskani)<length(names(network[1]))){
-    print(stars)
-      sosedje <- names(network[[stars]][[1]])
-      otroci[stars] <- sosedje
-      print(sosedje)
-      for (x in sosedje){
-        print(x)
-         if (obiskani[x]=="DA" && !(x %in% otroci[stars])){
-          print("imamo cikel")
-          print(cikel)
-          cikel <- c()
-        } else if (!(x %in% names(obiskani[]))){
-          print("Nadaljujmo")
-          cikel <- append(cikel, x)
-          print(cikel)
-          stars <- x
-          obiskani[x] <- "DA"
-          
-        }
-          
-      }
-          
-          
-      }
-      return(cikel)
-      
-    }
+DAG <- function(graf){
+  print(is_dag(graf$network))
+}
     
-# funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
+# E) funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
 najdi_cikle <- function(graf) {
   Cikli = list()
   for(v1 in V(graf$network)) {
@@ -161,9 +120,71 @@ najdi_cikle <- function(graf) {
   }
 }
 
+# F) funkcija vrne najdaljso pot v grafu
+najdaljsa_razdalja <- function(graf){
+  razdalja <- diameter(graf$network)
+  return(razdalja)
+}
 
-# E) RE?EVANJE PROBLEMOV:
+# G) funkcija pove ali je graf sestavljen iz ene ali veèih komponent in jih vrne loèene
+komponente <- function(graf){
+  if (is_connected(graf$network)) {
+    print("Graf je povezan!")
+  } else {
+    stevilo <- count_components(graf$network)
+    print(paste("Graf je sestavljen iz ", stevilo, "komponent. Tu je prikazana pripadnost vozlisc vsaki od njih."))
+    components(graf$network)[[1]]
+  }
+}
+
+# H) funkcija izrise graf, ki je komplementaren izbranemu grafu
+komplement <- function(graf){
+  kompl <- complementer(graf$network)
+  plot(kompl)
+}
+
+# I) funkcija, ki vrne najkrajso razdaljo med dvema najbolj oddaljenima tockama grafa
+najkrajsa_razdalja <- function(graf){
+  razdalja <- diameter(graf$network)
+return(razdalja)
+}
+
+
+# J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
+dvodelen <- function(graf){
+  dvo <- bipartite.mapping(graf$network)[[1]]
+  if (dvo){
+    plot_1 <- bipartite.projection(graf$network)[[1]]
+    plot_2 <- bipartite.projection(graf$network)[[2]]
+    return(list("dvo"= dvo, "plot_1" = plot_1, "plot_2" = plot_2))
+  }
+}
+
+
+
+# set_vertex_attr(graph, name, index = V(graph), value) za nastavitev utezi 
+#estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
+#automorphisms za iskanje avto ali izomorfisms izomorfizmov
+# bfs ali dfs za iskanje v globino
+# are_adjacent(graph, v1, v2) za preverjanje povezave med dvema toèkama grafa
+# all_simple_paths je funkcija, ki vrne vse enostavne poti med dvema toèkama
+# permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, èe ti ni všeè
+
+
+
+
+
+bipartite <- dvodelen(graf)
+
+
+
+
+
+
+### RE?EVANJE PROBLEMOV:
 # 1) PROBLEM NAJDALJ?E IN NAJKRAJ?E POTI MED IZBRANIMA VOZLISCEMA
+# problem trgovskega potnika
+# problem barvanja grafa
 
 max_min_pot <- function(v1, v2, graf){
   
@@ -181,28 +202,6 @@ pripravi_vozlisca <- function(graf){
     razdalje[u] <- 1000
   }
   return(list("barve"=barve, "razdalje"=razdalje, "ocetje"=ocetje))
-}
-
-
-dvodelnost <- function(graf, start){
-
-  matrika <- get.adjacency(graf$network)
-  barve <- rep(0,dim(matrika)[1])
-  names(barve) <- rownames(matrika)
-  k=1
-  barve[start] <- k
-  while (0 %in% barve){
-  sosedje <- neighbors(graf$network, start)
-  if (length(sosedje)>0){
-    k=k+1
-  for (sosed in sosedje){
-    barve[sosed] <- k
-    
-  }
-  
-  }
-  }
-  return (barve)
 }
 
 

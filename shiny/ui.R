@@ -1,12 +1,12 @@
 source("../libraries/lib.R")
-source("../funkcije.R")
+source("../glavne funkcije/funkcije.R")
 source("server.R")
 
 
 
 
 ## UI funkcija
-sidebar <- dashboardSidebar(hr(),
+sidebar <- dashboardSidebar(
                             sidebarMenu(id="vnos",
                                         menuItem("Vnos grafa", tabName = "vnos", selected = TRUE)),
                             sidebarMenu(id="lastnosti", 
@@ -99,16 +99,26 @@ body <- dashboardBody(
               h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
 
               radioButtons("characteristic", h3("Izberi karakteristike, ki te zanimajo"),
-                           choices = list("stopnje" = 1, "vsebovanost ciklov" = 2,
-                                          "stevilo povezav" = 3)),
+                           choices = list("stopnje" = 1, 
+                                          "vsebovanost ciklov" = 2,
+                                          "stevilo povezav" = 3,
+                                           "dvodelnost" = 4,
+                                           "premer/diameter" = 5,
+                                           "polmer/radij" = 6,
+                                            "povezanost" = 7
+                                          )),
               actionButton("button3", "Poslji poizvedbo")
               ),
 
             mainPanel(
               textOutput("text_4"),
-              textOutput("stopnje"),
               textOutput("text_5"),
-              uiOutput("cikli")
+              uiOutput("cikli"),
+              textOutput("stopnje"),
+              textOutput("text_6"),
+              plotOutput("dvodelnost")
+              
+              
             )
             )),
     

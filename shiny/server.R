@@ -89,6 +89,7 @@ server <- function(input, output, session) {
   observeEvent( input$button3, {
     
     req(df_react$graf)
+    
     if (input$characteristic == 1){
       output$stopnje <- renderText({
         seznam_stopenj <- stopnje(df_react$graf)
@@ -98,9 +99,7 @@ server <- function(input, output, session) {
         "Tukaj je seznam stopenj tvojega grafa:"
       })
       
-    } 
-    
-    if (input$characteristic == 2){
+    } else if (input$characteristic == 2){
       output$cikli <- renderUI({
         seznam_ciklov <- najdi_cikle(df_react$graf)
         vsi <- list()
@@ -108,15 +107,35 @@ server <- function(input, output, session) {
           vsi[cikel] <- seznam_ciklov[[cikel]]
         }
         print(vsi)
-        
       })
-    } 
-    
-    if (input$characteristic == 3){
+      
+    } else if (input$characteristic == 3){
       stevilo_povezav <- povezave(df_react$graf)
       output$text_5 <- renderText({
         paste("Tvoj graf ima", stevilo_povezav, "povezav.")
       })
+      
+    } else  if (input$characteristic == 4){
+      bipartite <- dvodelen(graf)
+      
+      if (bipartite$dvo == TRUE){
+      output$text_6 <- renderText ({
+        "Tvoj graf je dvodelen, tu sta mozni komponenti"
+      })
+      output$dvodelnost <- renderPlot({
+        plot(bipartite$plot_1)
+        plot(bipartite$plot_2)
+      })
+      } else {
+        
+        output$text_6 <- renderText ({
+          "Tvoj graf ni dvodelen!"
+          
+        })
+        
+      }
+      
+      
     }
     
   })
