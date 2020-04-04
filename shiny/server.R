@@ -10,15 +10,18 @@ server <- function(input, output, session) {
   # uporabnika vprasamo ali ima graf ze izbran ali naj mu ga predlaga program
   observeEvent( input$generate, {
     
-    if (input$generate == 2){
-      output$text_2 <- renderText({ "Super, podati mi moras le izbrane atribute grafa!" })
-    } else if (input$generate == 1){
-      output$text_2 <- renderText({ "Torej moras vnesti se povezavno matriko svojega grafa :)" })
+    if (input$generate == 1){
+      output$text_2 <- renderText({ "Super, podati mi moras zeljeno stevilo vozlisc in povezav. Lahko si izbereš tudi poln graf." })
+      } else if (input$generate == 2){
+      output$text_2 <- renderText({ "Torej moras vnesti se povezavno matriko svojega grafa." })
     } else {
       output$text_2 <- renderText({ "Prosim, izpolni zgornje polje!" })
     }
     
   })
+  
+  
+  
   
   
   #nato cakamo, da uporabnik izbere usmerjenost grafa in mu svetujemo, katere
@@ -35,21 +38,24 @@ server <- function(input, output, session) {
   })
   
   
+  
+  
+  
   # ko klikne na gumb, ki daje znak, da je ze koncal z izbiro atributov, mu ponudimo prazno matriko ustrezne velikosti
   observeEvent( input$button2, {
-    if (input$Dim_x_1 > 0 & input$Dim_y_1 > 0 & input$generate == 1){
+    if (input$vozl_2 > 0 & input$generate == 2){
       
       output$text_3 <- renderText({
         "Sedaj lahko vneses elemente povezavne matrike"})
       
       output$vnos <- renderUI({
-        lapply((1:input$Dim_x_1), function(i) {
-          textInput(paste0("v",i), paste0("v",i), "0,1,2")})
+        lapply((1:input$vozl_2), function(i) {
+          textInput(paste0("v",i), paste0("v",i), "0,1,0")})
       })
       
     } else {
       output$text_3 <- renderText({
-        "Prosim, ponovno preveri dimenziji matrike"})
+        "Prosim, ponovno preveri vnesene atribute!"})
       
     }
   })
@@ -61,21 +67,21 @@ server <- function(input, output, session) {
   # nato mu narocimo, naj narise graf
   observeEvent( input$button1, {
     
-    if (input$generate == 2){
+    if (input$generate == 1){
       
       output$graf <- renderPlot({
-        df_react$graf = narisi("", input$dir, input$ogl, input$Dim_x_2, input$Dim_y_2)
+        df_react$graf = narisi_izbor(input$vozl_1, input$povez, input$dir)
         plot.igraph(df_react$graf$network)
         
       })
       
-    } else if (input$generate == 1){
+    } else if (input$generate == 2){
       
-      matrika <- matrix(c(as.numeric(sapply(1:input$Dim_x_1, function(i) 
-        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$Dim_x_1, input$Dim_y_1, byrow=TRUE)
+      matrika <- matrix(c(as.numeric(sapply(1:input$vozl_2, function(i) 
+        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$vozl_2, input$vozl_2, byrow=TRUE)
       
       output$graf <- renderPlot({
-        df_react$graf = narisi(matrika, input$dir, input$ogl, input$Dim_x_1, input$Dim_y_1)
+        df_react$graf = narisi_pripravljen(matrika, input$dir)
         plot.igraph(df_react$graf$network)
         
       })

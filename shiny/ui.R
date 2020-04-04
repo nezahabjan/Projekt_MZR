@@ -6,7 +6,7 @@ source("server.R")
 
 
 ## UI funkcija
-sidebar <- dashboardSidebar(
+sidebar <- dashboardSidebar(hr(),
                             sidebarMenu(id="vnos",
                                         menuItem("Vnos grafa", tabName = "vnos", selected = TRUE)),
                             sidebarMenu(id="lastnosti", 
@@ -21,60 +21,51 @@ body <- dashboardBody(
     tabItem(tabName = "vnos",
             
             fluidRow(sidebarPanel(
-              h3("Dobrodosli v svetu grafov!"),
+              h3("Dobrodosel v svetu grafov!"),
               
-              selectInput("generate", "Zelis, da ti ponudim nakljucen graf po izbranih atributih?",
-                          choices = list("Ne, graf imam ze izbran" = 1,"Da, prosim" = 2, "/"=3), selected = 3),
+              selectInput("generate", "Izberi, ali naj ti graf generiram jaz, ali imaš že izbranega? ",
+                          choices = list("generiraj" = 1, "imam_svoj_graf"=2, "/"=3), selected = 3),
+              
               textOutput("text_2"),
               
-              selectInput("dir", "Izberi usmerjenost grafa",
+              
+              
+              conditionalPanel(
+                condition = "input.generate == '1'",
+                selectInput(inputId = "polnost", "Naj bo graf poln?",
+                            choices = list("DA" = 1, "NE" = 2, "/"=3), selected = 3),
+                
+                conditionalPanel(condition = "input.polnost == '1'",
+                         numericInput(inputId = "vozl_1",
+                             label = "Izberi stevilo vozlisc grafa",
+                             value = 0 )),
+                conditionalPanel(condition = "input.polnost == '2'",
+                        numericInput(inputId = "vozl_1",
+                                              label = "Izberi stevilo vozlisc grafa",
+                                              value = 0 ),
+                        numericInput(inputId = "povez",
+                             label = "Izberi stevilo povezav grafa",
+                             value = 0 ))
+              ),
+              
+              
+              conditionalPanel(
+                condition = "input.generate == '2'",
+                numericInput(inputId = "vozl_2",
+                             label = "Izberi stevilo vozlisc grafa",
+                             value = 0 ),
+                actionButton("button2", "Vnesi elemente povezavne matrike")
+
+              ),
+              
+              
+              
+              selectInput("dir", "Izberi se usmerjenost grafa",
                           choices = list("Graf ni usmerjen" = 1, "Graf je usmerjen" = 2, "nevem" = 3), selected = 3),
               textOutput("text_1"),
               
-          
-          # v primeru da zelimo zgeneriran neusmerjen graf, moramo podati stevilo zeljenih oglisc        
-          conditionalPanel(
-                condition = "input.dir == '2' && input.generate == '2'",
-                numericInput(inputId = "ogl",
-                             label = "Izberi stevilo oglisc grafa",
-                             value = 0 ),
-                ),
-          
-          conditionalPanel(
-            condition = "input.ogl == '0' && input.button1 == 'TRUE'",
-            p("Prosim, preveri ponovno izbrano stevilo oglisc!")
-          ),
-          
-          
-          # v primeru, da imamo graf ze izbran, programu podamo dimenzije povezavne matrike
-          conditionalPanel(
-            condition = "input.generate == '1'",
-            numericInput(inputId = "Dim_x_1",
-                         label = "Izberi x dimenzijo povezavne matrike",
-                         value = 0 ),
-            
-            numericInput(inputId = "Dim_y_1",
-                         label = "Izberi y dimenzijo povezavne matrike",
-                         value = 0 ),
-            
-            actionButton("button2", "Vnesi elemente")
-   
-          ),
-          
 
-          # v primeru, da zelimo zgeneriran usmerjen graf, podamo dimenziji povezavne matrike
-          conditionalPanel(
-            condition = "input.dir == '1' && input.generate == '2'",
-            p("V redu, potreboval bom le zeljeni dimenziji povezavne matrike"),
-            numericInput(inputId = "Dim_x_2",
-                         label = "Izberi x dimenzijo",
-                         value = 0 ),
-            
-            numericInput(inputId = "Dim_y_2",
-                         label = "Izberi y dimenzijo",
-                         value = 0 )
-          ),
-
+              
               actionButton("button1", "Narisi")
               
             ),

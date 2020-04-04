@@ -1,4 +1,4 @@
-#Datoteka za knjiznjice 115 120
+
 #pozenemo na zacetku, da dobimo potrebno
 library(igraph)
 library(ggraph)
@@ -8,10 +8,10 @@ library(shinydashboard)
 library(shinyjs)
 library(shinyMatrix)
 library(googleVis)
-library(TSP)
+library(pracma)
+library(randomGLM)
 
 
-library(shinyBS)
 library(knitr)
 library(dplyr)
 library(dbplyr)

@@ -4,6 +4,29 @@
 
 ### najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
 # A) Narisemo najprej graf
+
+#a) izberemo lahko obliko grafa, ki jo zelimo
+narisi_izbor <- function(n, p, directed){
+  #vnesemo izbor grafa, stevilo vozlisc (n), stevilo povezav (p), usmerjenost
+  #dobimo nakljucno matriko velikosti nxn, ki vsebuje p enic, torej p povezav v grafu - AJD_matrika je vedno kvadratna, ker je to povezavna matrika!!
+    data <- zeros(n,n)
+    data[randperm(n*n, p)]=1
+    network <- graph_from_adjacency_matrix(data, mode = "undirected", diag = FALSE)
+    plot(network)
+  return (list("network"=network, "directed"=directed, "matrika"=data))
+}
+
+#b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo še atribut usmerjenosti
+# directed je "directed" ali "undirected", diagonalo tudi upoštevamo, glede na to da je izbor naš
+narisi_pripravljen <- function(adj_matrika, directed){
+  data <- adj_matrika
+  network <- graph_from_adjacency_matrix(data, mode = directed, diag = TRUE)
+  plot(network)
+  return (list("network"=network, "directed"=directed, "matrika"=data))
+}
+
+
+
 narisi <- function(matrika, directed, st_ogl, st_vrst, st_stolp){
   # matrika je lahko vstavljena ali ne
   # directed je lahko "yes" (2) ali "no" (1)
@@ -149,7 +172,6 @@ najkrajsa_razdalja <- function(graf){
 return(razdalja)
 }
 
-
 # J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
 dvodelen <- function(graf){
   dvo <- bipartite.mapping(graf$network)[[1]]
@@ -169,14 +191,6 @@ dvodelen <- function(graf){
 # are_adjacent(graph, v1, v2) za preverjanje povezave med dvema toèkama grafa
 # all_simple_paths je funkcija, ki vrne vse enostavne poti med dvema toèkama
 # permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, èe ti ni všeè
-
-
-
-
-
-bipartite <- dvodelen(graf)
-
-
 
 
 
