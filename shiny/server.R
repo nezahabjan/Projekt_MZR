@@ -2,7 +2,7 @@
 
 
 ## SERVER funkcija
-server <- function(input, output, session) {
+server <- function(input, output) {
   
   
   ### ZAVIHEK VNOS GRAFA ###
@@ -68,12 +68,17 @@ server <- function(input, output, session) {
   observeEvent( input$button1, {
     
     if (input$generate == 1){
-      
-      output$graf <- renderPlot({
-        df_react$graf = narisi_izbor(input$vozl_1, input$povez, input$dir)
-        plot.igraph(df_react$graf$network)
-        
+       if (input$polnost == 1){
+         output$graf <- renderPlot({
+           df_react$graf = narisi_poln(input$vozl_1, input$dir)
+           plot.igraph(df_react$graf$network)
+         })
+       } else if (input$polnost == 2){
+         output$graf <- renderPlot({
+           df_react$graf = narisi_izbor(input$vozl_1, input$povez, input$dir)
+           plot.igraph(df_react$graf$network)
       })
+       }
       
     } else if (input$generate == 2){
       
