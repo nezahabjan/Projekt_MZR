@@ -10,4 +10,5 @@ library(shinyMatrix)
 library(TSP)
 library(pracma)
 library(randomGLM)
+library(googleVis)
 
