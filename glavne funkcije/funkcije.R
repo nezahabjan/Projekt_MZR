@@ -171,38 +171,26 @@ dvodelen <- function(graf){
 # problem barvanja grafa
 
 
-pripravi_vozlisca <- function(graf){
-  barve <- list()
-  ocetje <- list()
-  razdalje <- list()
-  
-  for (u in rownames(get.adjacency(graf$network))){
-    barve[u] <- "bela"
-    ocetje[u] <- 0
-    razdalje[u] <- 1000
-  }
-  return(list("barve"=barve, "razdalje"=razdalje, "ocetje"=ocetje))
-}
-
-
-preveri_utezi <- function(matrika, utezi){
-  for (i in 1:dim(matrika)[1]){
-    for (j in 1:dim(matrika)[2]){
-      if (matrika [i,j] == 0){
-        if (utezi [i,j] != 0){
-          print("Ponovno preveri utezi!")
-        } else {
-          print("Utezi so pravilno nastavljene!")
-        }
-      }
-    }
-  }
-}
-
-
 # problem trgovskega potnika
-graf <- make_full_graph(5, directed=FALSE)
-E(graf)$weigth <- c(1:10)
-# resimo problem TSP na primeru 5-polnega grafa
+PTP <- function(graf, v1, vect_utezi){
+  #preberemo povezavno matriko grafa
+  matrika <- get.adjacency(graf)
+  
+  #preberemo komplement grafa in njegovo matriko povezav
+  graf_kompl <- complementer(graf)
+  matrika_kompl <- get.adjacency(graf_kompl)
+  
+  #ustvarimo poln graf, z dodanimi manjkajocimi povezavami, ki jim dodelimo neskoncne poti, obstojecim pa vektor utezi
+  graf_tsp <- graph.adjacency(matrika, mode = "undirected", weighted = TRUE)
+  E(graf_tsp)$weight <- vect_utezi
+  
+  graf_tsp_final <- add.edges(graf_tsp, get.edgelist(graf_kompl), weight=rep(10000, length(E(graf_kompl))))
+
+  tour <- solve_TSP(TSP(distances(graf_tsp_final)), method = "nearest_insertion", start = v1)
+  
+  return(list("dolzina"=tour_length(tour)))
+  
+}
+
 
 
