@@ -17,7 +17,7 @@ narisi_izbor <- function(n, p, directed){
     data <- zeros(n,n)
     data[randperm(n*n, p)]=1
     network <- graph_from_adjacency_matrix(data, mode = mode, diag = FALSE)
-    plot(network)
+    #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
 narisi_poln <- function(n, dir){
@@ -27,7 +27,7 @@ narisi_poln <- function(n, dir){
     directed <- "TRUE"
   }
   network <- make_full_graph(n, directed)
-  
+  return(network)
 }
 
 #b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo še atribut usmerjenosti
@@ -40,7 +40,7 @@ narisi_pripravljen <- function(adj_matrika, directed){
   }
   data <- adj_matrika
   network <- graph_from_adjacency_matrix(data, mode = directed, diag = TRUE)
-  plot(network)
+  #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
 
