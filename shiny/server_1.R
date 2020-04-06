@@ -58,32 +58,32 @@ server <- function(input, output) {
       if (input$polnost == 1){
         output$graf <- renderPlot({
           
-          #df_react$graf = narisi_poln(input$vozl_1, input$dir)
-          #plot.igraph(df_react$graf$network)
+          df_react$graf = narisi_poln(input$vozl_1, input$dir)
+          #plot.igraph(df_react$graf)
           
-          plot.igraph(narisi_poln(input$vozl_1, input$dir))
+          plot.igraph(df_react$graf)
         })
       } else if (input$polnost == 2){
         output$graf <- renderPlot({
           
-          #df_react$graf = narisi_izbor(input$vozl_1, input$povez, input$dir)
+          df_react$graf = narisi_izbor(input$vozl_2, input$povez, input$dir)
           #plot.igraph(df_react$graf$network)
           
-          plot.igraph(narisi_izbor(input$vozl_1, input$povez, input$dir)$network)
+          plot.igraph(df_react$graf$network)
         })
       }
       
     } else if (input$generate == 2){
       
-      matrika <- matrix(c(as.numeric(sapply(1:input$vozl_2, function(i) 
-        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$vozl_2, input$vozl_2, byrow=TRUE)
+      matrika <- matrix(c(as.numeric(sapply(1:input$vozl_3, function(i) 
+        unlist(strsplit(input[[paste0("v",i)]], ","))))), input$vozl_3, input$vozl_3, byrow=TRUE)
       
       output$graf <- renderPlot({
         
-        #df_react$graf = narisi_pripravljen(matrika, input$dir)
+        df_react$graf = narisi_pripravljen(matrika, input$dir)
         #plot.igraph(df_react$graf$network)
         
-        plot.igraph(narisi_izbor(input$vozl_1, input$povez, input$dir)$network)
+        plot.igraph(df_react$graf$network)
         
       })
     }
@@ -92,9 +92,94 @@ server <- function(input, output) {
   
   
   
+  ### ZAVIHEK LASTNOSTI ###
+  
+  observeEvent( input$button3, {
+    
+    req(df_react$graf)
+    
+    
+    if (input$characteristic == 1){
+      output$poizvedba <- renderText({
+        seznam_stopenj <- stopnje(df_react$graf)
+        #paste(seznam_stopenj)
+        paste(names(seznam_stopenj), seznam_stopenj)
+      })
+      output$text_4 <- renderText({
+        "Tukaj je seznam stopenj tvojega grafa:"
+      })
+      
+    } else if (input$characteristic == 2){
+      output$poizvedba <- renderUI({
+        seznam_ciklov <- najdi_cikle(df_react$graf)
+        vsi <- list()
+        for (cikel in (1:length(seznam_ciklov))){
+          vsi[cikel] <- seznam_ciklov[[cikel]]
+        }
+        print(vsi)
+      })
+      
+    } else if (input$characteristic == 3){
+      stevilo_povezav <- povezave(df_react$graf)
+      output$text_4 <- renderText({
+        paste("Tvoj graf ima", stevilo_povezav, "povezav.")
+      })
+      
+    } else if (input$characteristic == 5){
+      
+      diam <- najdaljsa_razdalja(df_react$graf)
+      print(diam)
+      output$text_4 <- renderText({
+        paste("Najdaljsa razdalja v grafu meri", diam ,"enot.") 
+      })
+      
+    } else if (input$characteristic == 6){
+      
+      radij <- najkrajsa_razdalja(df_react$graf)
+      print(radij)
+      output$text_4 <- renderText({
+        paste("Najkrajsa razdalja v grafu meri", radij ,"enot.") 
+      })
+      
+    } else if (input$characteristic == 4){
+      bipartite <- dvodelen(df_react$graf)
+      
+      if (bipartite$dvo == TRUE){
+        output$text_4 <- renderText({
+          "Tvoj graf je dvodelen, tu sta mozni komponenti"
+        })
+        output$poizvedba <- renderPlot({
+          plot(bipartite$plot_1)
+          plot(bipartite$plot_2)
+        })
+      } else {
+        
+        output$text_4 <- renderText({
+          "Tvoj graf ni dvodelen!"
+          
+        })
+        
+      }
+      
+      
+    } else if (input$characteristic == 7){
+      
+      komp <- komponente(df_react$graf)
+      output$text_4 <- renderText({
+        paste(komp)
+        
+      })
+      
+      
+      
+      
+      
+    }
+    
+    
+  })
+  
   
   
   
   }
-
-shinyApp(ui=ui, server=server) 

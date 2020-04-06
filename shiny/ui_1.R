@@ -3,6 +3,9 @@
 body <- dashboardBody(
   tabItems(
     
+    
+    ### ZAVIHEK VNOS
+    
     tabItem(tabName = "vnos",
             
             fluidRow(sidebarPanel(
@@ -23,7 +26,7 @@ body <- dashboardBody(
                                               label = "Izberi stevilo vozlisc grafa",
                                               value = 0 )),
                 conditionalPanel(condition = "input.polnost == '2'",
-                                 numericInput(inputId = "vozl_1",
+                                 numericInput(inputId = "vozl_2",
                                               label = "Izberi stevilo vozlisc grafa",
                                               value = 0 ),
                                  numericInput(inputId = "povez",
@@ -33,7 +36,7 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.generate == '2'",
-                numericInput(inputId = "vozl_2",
+                numericInput(inputId = "vozl_3",
                              label = "Izberi stevilo vozlisc grafa",
                              value = 0 ),
                 
@@ -58,7 +61,56 @@ body <- dashboardBody(
               uiOutput("vnos"),
               tabPanel("Graf", plotOutput("graf"))
               
-            ))) ))
+            ))),
+    
+    
+    
+    ### ZAVIHEK LASTNOSTI
+    
+    tabItem(tabName = "lastnosti",
+            
+            fluidRow(sidebarPanel(
+              h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
+              
+              radioButtons("characteristic", 
+                           h3("Izberi karakteristike, ki te zanimajo"),
+                           choices = list("stopnje" = 1, 
+                                          "vsebovanost ciklov" = 2,
+                                          "stevilo povezav" = 3,
+                                          "dvodelnost" = 4,
+                                          "premer/diameter" = 5,
+                                          "polmer/radij" = 6,
+                                          "povezanost" = 7
+                           )),
+              actionButton("button3", "Poslji poizvedbo")
+            ),
+            
+            mainPanel(
+              textOutput("text_4"),
+              tabPanel("Poizvedba", uiOutput("poizvedba"))
+
+              
+              
+            )
+            ))
+    
+    
+    
+    
+    
+    
+    ))
+
+
+
+
+
+
+
+
+
+
+
 
 
 

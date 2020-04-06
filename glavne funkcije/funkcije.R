@@ -17,6 +17,7 @@ narisi_izbor <- function(n, p, directed){
     data <- zeros(n,n)
     data[randperm(n*n, p)]=1
     network <- graph_from_adjacency_matrix(data, mode = mode, diag = FALSE)
+    set_vertex_attr(network, "label", value = letters[1:n])
     #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
@@ -27,6 +28,7 @@ narisi_poln <- function(n, dir){
     directed <- "TRUE"
   }
   network <- make_full_graph(n, directed)
+  set_vertex_attr(network, "label", value = letters[1:n])
   return(network)
 }
 
@@ -40,26 +42,26 @@ narisi_pripravljen <- function(adj_matrika, directed){
   }
   data <- adj_matrika
   network <- graph_from_adjacency_matrix(data, mode = directed, diag = TRUE)
+  set_vertex_attr(network, "label", value = letters[1:dim(matrika)[1]])
   #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
 
 
 # B) koliksne so stopnje oglisc?
-#graf <- narisi("", "1", 6, 5, 4)
-stopnje <- function(graf){
+stopnje_2 <- function(graf){
   seznam <- list()
   network <- graf$network
-  directed <- graf$directed
+  directed <- is_directed(graf)
   matrika <- graf$matrika
-    if (directed == "1"){
+    if (directed == "1" | directed == "FALSE"){
       # v primeru, da imamo opravka z neusmerjenim grafom je vsaka povezava do vozlisca ena stopnja vec
-      for (x in 1:length(V(network))){
-        vozlisce <- names(network[[x]])
+      for (x in 1:length(V(graf))){
+        vozlisce <- names(V(graf))
         stopnja <- length(network[[vozlisce]][[1]])
         seznam[vozlisce] <- stopnja 
       } 
-    } else if (directed =="2"){
+    } else if (directed =="2" | directed == "TRUE"){
       # v primeru, ko je nas graf usmerjen, delimo stopnje na vhodne in izhodne
       #matrika_grafa <- get.adjacency(graf)
       for (element in rownames(matrika)){
@@ -74,20 +76,35 @@ stopnje <- function(graf){
   return(seznam)
 }
 
+#ta funkcija je uporabljena
+stopnje <- function(graf){
+  seznam <- list()
+  directed <- is_directed(graf)
+  if (directed == "1" | directed == "FALSE"){
+    seznam <- degree(graf)
+  } else if (directed == "2" | directed == "TRUE"){
+    seznam$vhodne <- degree(graf, mode= c("in"))
+    seznam$izhodne <- degree(graf, mode= c("out"))
+    
+  }
+   return (list("vhodne" = seznam$vhodne, "izhodne" = seznam$izhodne))
+}
+
+
 # C) koliko povezav vsebuje?
-#graf <- narisi(inc_matrika, "yes", 4, 5, 2)
 povezave <- function(graf) {
-  stevilo_povezav <- length(E(graf$network))
+  stevilo_povezav <- length(E(graf))
   return(stevilo_povezav)
   
 }
 
+
 # D) ali ima nas graf cikle? - funkcija je v redu za usmerjene grafe, preverja ce so usmerjeni aciklicni
-#graf <- narisi("", "no", 4, 4, 3)
 DAG <- function(graf){
   print(is_dag(graf$network))
 }
     
+
 # E) funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
 najdi_cikle <- function(graf) {
   Cikli = list()
@@ -115,22 +132,26 @@ najdi_cikle <- function(graf) {
   }
 }
 
+
 # F) funkcija vrne najdaljso pot v grafu
 najdaljsa_razdalja <- function(graf){
-  razdalja <- diameter(graf$network)
+  razdalja <- diameter(graf)
   return(razdalja)
 }
 
+
 # G) funkcija pove ali je graf sestavljen iz ene ali veèih komponent in jih vrne loèene
 komponente <- function(graf){
-  if (is_connected(graf$network)) {
-    print("Graf je povezan!")
+  if (is_connected(graf)) {
+    a <-"Graf je povezan!"
   } else {
-    stevilo <- count_components(graf$network)
-    print(paste("Graf je sestavljen iz ", stevilo, "komponent. Tu je prikazana pripadnost vozlisc vsaki od njih."))
-    components(graf$network)[[1]]
+    stevilo <- count_components(graf)
+    a <- paste("Graf je sestavljen iz ", stevilo, "komponent. Tu je prikazana pripadnost vozlisc vsaki od njih.")
+    #components(graf)[[1]]
   }
+  return(print(a))
 }
+
 
 # H) funkcija izrise graf, ki je komplementaren izbranemu grafu
 komplement <- function(graf){
@@ -138,19 +159,23 @@ komplement <- function(graf){
   plot(kompl)
 }
 
+
 # I) funkcija, ki vrne najkrajso razdaljo med dvema najbolj oddaljenima tockama grafa
 najkrajsa_razdalja <- function(graf){
-  razdalja <- diameter(graf$network)
+  razdalja <- radius(graf)
 return(razdalja)
 }
 
+
 # J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
 dvodelen <- function(graf){
-  dvo <- bipartite.mapping(graf$network)[[1]]
+  dvo <- bipartite.mapping(graf)[[1]]
   if (dvo){
-    plot_1 <- bipartite.projection(graf$network)[[1]]
-    plot_2 <- bipartite.projection(graf$network)[[2]]
+    plot_1 <- bipartite.projection(graf)[[1]]
+    plot_2 <- bipartite.projection(graf)[[2]]
     return(list("dvo"= dvo, "plot_1" = plot_1, "plot_2" = plot_2))
+  } else {
+    return(list("dvo"=dvo))
   }
 }
 
