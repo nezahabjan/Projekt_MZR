@@ -4,7 +4,7 @@ Projekt temelji na preučevanju glavnih značilnosti grafov in reševanju proble
 
 NAVODILA ZA UPORABNIKA:
 
-* uporabnik zažene skripto ui.R v mapi shiny - tam so zbrane potrebne knjižnice in narejeni sklici na ostale potrebne datoteke s funkcijami
+* uporabnik zažene skripto zagon.R v mapi shiny - tam so zbrane potrebne knjižnice in narejeni sklici na ostale potrebne datoteke s funkcijami
 * ko se aplikacija odpre lahko na prvem zavihku izbiramo o osnovnih lastnostih grafa, ki ga želimo preučevati, pri čemer lahko programu podamo svoj graf v obliki povezavne matrike, ali pa se graf zgenerira sam na podlagi podatka o usmerjenosti in željenem številu povezav in vozlišč - Po izboru kliknemo gumb NARISI
 * na dvigem zavihku lahko poizvemo o naprednejših lastnostih našega grafa - izberemo si po eno in eno lastnost v seznamu
 * tretji zavihek je namenjen reševanju kompleksnejših problemov, uporabnik si izbere problem, ki se izvede na grafu iz prvega zavihka
