@@ -82,6 +82,7 @@ body <- dashboardBody(
                                           "polmer/radij" = 6,
                                           "povezanost" = 7
                            )),
+              
               actionButton("button3", "Poslji poizvedbo")
             ),
             
@@ -92,14 +93,62 @@ body <- dashboardBody(
               
               
             )
+            )),
+    
+    
+    
+    
+    tabItem(tabName = "problemi",
+            
+            fluidRow(sidebarPanel(
+              h3("Bi rad na svojem grafu resil kaksen problem?"),
+              
+              selectInput("problem", "Katerega od problemov se bos lotil?",
+                          choices = list("Problem trgovskega potnika" = 1,"/"=2), selected = 2),
+              
+              
+              conditionalPanel(
+                condition = "input.problem =='1'",
+                p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi"),
+                
+                textOutput("text_5"),
+                htmlOutput("edges"),
+                
+                #matrixInput("utezi", matrix(1,input.vozl_2, input.vozl_2), class="numeric"),
+                textInput("utezi", "Vsaka povezava v povezavni matriki naj dobi svojo utez!", value=""),
+                #uiOutput("utezi"),
+                numericInput("start", "Vnesi vozlisce, kjer naj trgovski potnik zacne s potjo!", value=0, min=0),
+                
+                textOutput("text_6"),
+                textOutput("text_7")
+              ),
+              
+              actionButton("button4", "Resi problem")
+              
+              
+            ),
+            
+            mainPanel(
+              textOutput("text_8"),
+              uiOutput("TSP")
+              
+              
+              
             ))
-    
-    
-    
-    
-    
-    
+    )
     ))
+  
+  
+
+
+
+
+
+
+    
+    
+    
+
 
 
 
@@ -120,7 +169,7 @@ sidebar <- dashboardSidebar(hr(),
                             sidebarMenu(id="lastnosti", 
                                         menuItem("Ugotavljanje lastnosti grafa", tabName = "lastnosti")),
                             sidebarMenu(id="problemi", 
-                                        menuItem("Izbira in reĹˇevanje problema", tabName = "problemi"))
+                                        menuItem("Izbira in resevanje problema", tabName = "problemi"))
 )
 
 

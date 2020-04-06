@@ -28,8 +28,9 @@ narisi_poln <- function(n, dir){
     directed <- "TRUE"
   }
   network <- make_full_graph(n, directed)
-  set_vertex_attr(network, "label", value = letters[1:n])
-  return(network)
+  matrika <- get.adjacency(network)
+  
+  return(list("network"=network, "matrika"=matrika))
 }
 
 #b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo še atribut usmerjenosti
@@ -82,12 +83,14 @@ stopnje <- function(graf){
   directed <- is_directed(graf)
   if (directed == "1" | directed == "FALSE"){
     seznam <- degree(graf)
+    return (list("stopnje"=seznam))
+    
   } else if (directed == "2" | directed == "TRUE"){
     seznam$vhodne <- degree(graf, mode= c("in"))
     seznam$izhodne <- degree(graf, mode= c("out"))
+    return (list("vhodne" = seznam$vhodne, "izhodne" = seznam$izhodne))
     
   }
-   return (list("vhodne" = seznam$vhodne, "izhodne" = seznam$izhodne))
 }
 
 
@@ -101,7 +104,7 @@ povezave <- function(graf) {
 
 # D) ali ima nas graf cikle? - funkcija je v redu za usmerjene grafe, preverja ce so usmerjeni aciklicni
 DAG <- function(graf){
-  print(is_dag(graf$network))
+  return(is_dag(graf))
 }
     
 
@@ -168,7 +171,7 @@ return(razdalja)
 
 
 # J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
-dvodelen <- function(graf){
+dvodelen_2 <- function(graf){
   dvo <- bipartite.mapping(graf)[[1]]
   if (dvo){
     plot_1 <- bipartite.projection(graf)[[1]]
@@ -179,11 +182,14 @@ dvodelen <- function(graf){
   }
 }
 
-
+dvodelen <- function(graf){
+  dvo <- bipartite.mapping(graf)[[1]]
+  return(dvo)
+}
 
 # set_vertex_attr(graph, name, index = V(graph), value) za nastavitev utezi 
-#estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
-#automorphisms za iskanje avto ali izomorfisms izomorfizmov
+# estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
+# automorphisms za iskanje avto ali izomorfisms izomorfizmov
 # bfs ali dfs za iskanje v globino
 # are_adjacent(graph, v1, v2) za preverjanje povezave med dvema toèkama grafa
 # all_simple_paths je funkcija, ki vrne vse enostavne poti med dvema toèkama
@@ -197,22 +203,23 @@ dvodelen <- function(graf){
 
 
 # problem trgovskega potnika
-PTP <- function(graf, v1, vect_utezi){
+PTP <- function(graf, v1, matrika_utezi){
   #preberemo povezavno matriko grafa
-  matrika <- get.adjacency(graf)
-  
+  #matrika <- graf$matrika
+
   #preberemo komplement grafa in njegovo matriko povezav
-  graf_kompl <- complementer(graf)
-  matrika_kompl <- get.adjacency(graf_kompl)
+  #graf_kompl <- complementer(graf$network)
+  #matrika_kompl <- get.adjacency(graf_kompl)
   
   #ustvarimo poln graf, z dodanimi manjkajocimi povezavami, ki jim dodelimo neskoncne poti, obstojecim pa vektor utezi
-  graf_tsp <- graph.adjacency(matrika, mode = "undirected", weighted = TRUE)
-  E(graf_tsp)$weight <- vect_utezi
+  #graf_tsp <- graph.adjacency(matrika, mode = "undirected", weighted = TRUE)
+  #E(graf_tsp)$weight <- vect_utezi
   
-  graf_tsp_final <- add.edges(graf_tsp, get.edgelist(graf_kompl), weight=rep(10000, length(E(graf_kompl))))
+  #graf_tsp_final <- add.edges(graf_tsp, get.edgelist(graf_kompl), weight=rep(10000, length(E(graf_kompl))))
 
-  tour <- solve_TSP(TSP(distances(graf_tsp_final)), method = "nearest_insertion", start = v1)
-  
+  tour <- solve_TSP(ATSP(matrika_utezi), method="nearest_insertion", start=v1)
+  #tour <- solve_TSP(TSP(distances(graf_tsp_final)), method = "two_opt", start = v1)
+  View(tour)
   return(list("dolzina"=tour_length(tour)))
   
 }
