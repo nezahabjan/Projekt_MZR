@@ -30,16 +30,15 @@ server <- function(input, output) {
   })
   
   observeEvent( input$button2, {
-    if (input$vozl_2 > 0 & input$generate == 2){
+    if (input$vozl_3 > 0 & input$generate == 2){
       
       output$text_3 <- renderText({
-        "Sedaj lahko vneses elemente povezavne matrike"})
-      
-      #matrixInput("utezi", matrix(0,4,5), class="numeric")
+        "Sedaj lahko po vrsticah vneses elemente povezavne matrike."
+        })
       
       output$vnos <- renderUI({
-        lapply((1:input$vozl_2), function(i) {
-          textInput(paste0("v",i), paste0("v",i), "0,1,0")})
+        lapply((1:input$vozl_3), function(i) {
+          textInput(paste0("v",i), paste0("v",i), paste("0,0,1,... vnesi",input$vozl_3,"cifer"))})
       })
       
     } else {
@@ -59,16 +58,12 @@ server <- function(input, output) {
         output$graf <- renderPlot({
           
           df_react$graf = narisi_poln(input$vozl_1, input$dir)
-          #plot.igraph(df_react$graf)
-          
           plot.igraph(df_react$graf$network)
         })
       } else if (input$polnost == 2){
         output$graf <- renderPlot({
           
           df_react$graf = narisi_izbor(input$vozl_2, input$povez, input$dir)
-          #plot.igraph(df_react$graf$network)
-          
           plot.igraph(df_react$graf$network)
         })
       }
@@ -81,14 +76,11 @@ server <- function(input, output) {
       output$graf <- renderPlot({
         
         df_react$graf = narisi_pripravljen(matrika, input$dir)
-        #plot.igraph(df_react$graf$network)
-        
         plot.igraph(df_react$graf$network)
         
       })
     }
   })
-  
   
   
   
@@ -186,16 +178,7 @@ server <- function(input, output) {
   
   
   
-  
   ### ZAVIHEK PROBLEMI ###
-  
-  
-  output$dimenzija <- renderUI({
-    req(df_react$graf)
-    length(E(df_react$graf$network)) 
-  })
-     
- 
   
   observeEvent(input$problem,{
     req(df_react$graf)
@@ -203,11 +186,6 @@ server <- function(input, output) {
       output$text_5 <- renderText({
         "Utezi doloci po vrsti, spodaj prikazanim povezavam iz vozlisc v1 v v2."
       })
-      
-      #output$utezi <- renderUI({
-      #  lapply((1:input$vozl_2), function(i) {
-      #    textInput(paste0("u",i), paste0("u",i), "1,2,3")})
-      #})
       
       output$edges <- renderGvis({
       data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
@@ -220,10 +198,7 @@ server <- function(input, output) {
     
    })
     
-    
-    
-    
-    observeEvent(input$button4, {
+  observeEvent(input$button4, {
       #vzamemo graf, ki je trenutno v uporabi
       req(df_react$graf)
 

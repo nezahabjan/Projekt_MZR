@@ -1,5 +1,6 @@
 
 ## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
+# SPLOSNE FUNKCIJE
 
 
 ### najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
@@ -25,6 +26,7 @@ narisi_izbor <- function(n, p, directed){
     #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
+
 narisi_poln <- function(n, dir){
   if (dir == 1) {
     directed <- "FALSE"
@@ -46,7 +48,7 @@ narisi_pripravljen <- function(adj_matrika, directed){
     mode <- "directed"
   }
   data <- adj_matrika
-  network <- graph_from_adjacency_matrix(data, mode = directed, diag = TRUE)
+  network <- graph_from_adjacency_matrix(data, mode = mode, diag = TRUE)
   #set_vertex_attr(network, "label", value = letters[1:dim(matrika)[1]])
   #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
@@ -202,7 +204,7 @@ dvodelen <- function(graf){
 
 
 
-### RE?EVANJE PROBLEMOV:
+### RESEVANJE PROBLEMOV:
 # problem barvanja grafa
 
 

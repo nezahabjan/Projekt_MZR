@@ -40,12 +40,14 @@ body <- dashboardBody(
                              label = "Izberi stevilo vozlisc grafa",
                              value = 0 ),
                 
-                actionButton("button2", "Vnesi elemente povezavne matrike")
+                actionButton("button2", "Vnesi elemente povezavne matrike"),
+                
+                textOutput("text_3"),
+                uiOutput("vnos")
                 
               ),
               
-              
-              
+
               selectInput("dir", "Izberi se usmerjenost grafa",
                           choices = list("Graf ni usmerjen" = 1, "Graf je usmerjen" = 2, "nevem" = 3), selected = 3),
               
@@ -56,11 +58,7 @@ body <- dashboardBody(
             ),
             
             mainPanel( 
-              
-              textOutput("text_3"),
-              uiOutput("vnos"),
               tabPanel("Graf", plotOutput("graf"))
-              
             ))),
     
     
@@ -114,12 +112,11 @@ body <- dashboardBody(
                 textOutput("text_5"),
                 htmlOutput("edges"),
                 
-                #matrixInput("utezi", matrix(1,input.vozl_2, input.vozl_2), class="numeric"),
                 textInput("utezi", "Vsaka povezava v povezavni matriki naj dobi svojo utez!", value=""),
-                #uiOutput("utezi"),
-                numericInput("start", "Vnesi vozlisce, kjer naj trgovski potnik zacne s potjo!", value=0, min=0),
-                
+
                 textOutput("text_6"),
+                numericInput("start", "Vnesi vozlisce, kjer naj trgovski potnik zacne s potjo!", value=0, min=0),
+
                 textOutput("text_7")
               ),
               
