@@ -224,78 +224,67 @@ server <- function(input, output) {
     
     
     observeEvent(input$button4, {
-      
+      #vzamemo graf, ki je trenutno v uporabi
       req(df_react$graf)
-      data_edge <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
-      
-      num_oglisc <- length(V(df_react$graf$network))
-      
+
       if (input$problem == 1){
-        
-      #matrika_utezi <- matrix(c(as.numeric(sapply(1:dim, function(i) 
-      #    unlist(strsplit(input[[paste0("u",i)]], ","))))), dim, dim, byrow=TRUE)
-      
+      #preberemo vnesene utezi uporabnika
       vect_utezi <- as.numeric(unlist(strsplit(input$utezi, ",")))
       
       #### sestavimo matriko utezi
-      matrika_utezi <- zeros(num_oglisc)
-        for (vrstica in 1:dim(data_edge)[1]){
-          i <- data_edge[vrstica,][[1]]
-          j <- data_edge[vrstica,][[2]]
-          matrika_utezi[i,j]<- vect_utezi[vrstica]
-        }
-      for (i in 1:num_oglisc){
-        for (j in 1:num_oglisc){
-          if (matrika_utezi[i,j] == 0){
-            matrika_utezi[i,j] <- 10000
-          }
-        }
-      }
-      diag(matrika_utezi) <- 0
+      matrika_utezi <- sestavi_matriko_utezi(df_react$graf$network, vect_utezi)
       #### matriko uporabimo kot cene v TSP
       
-      
-
       if (length(vect_utezi) != length(E(df_react$graf$network))){
         output$text_6 <- renderText({
           "Ponovno preveri vnos utezi. Vsaki povezavi grafa pripada tocno ena vrednost."
         })
       } else {
-        output$text_6 <- NULL
+        output$text_6 <- renderText({
+          "Super, vsaki povezavi grafa sedaj pripada tocno ena vrednost."
+        })
         }
       
       # postavimo omejitev, da graf sploh vsebuje zacetno vozlisce in da ima vsaj 2 originalna soseda, sicer bo obhod zelo drag
-      if (input$start > length(E(df_react$graf$network)) | length(neighbors(test$network, 3))){
+      if (input$start > length(E(df_react$graf$network)) | length(neighbors(df_react$graf$network, input$start))<2){
         output$text_7 <- renderText({
           "Ponovno preveri ustreznost zacetnega vozlisca. Ce ta nima vsaj dveh sosedov v tvojem grafu, bo obhod zelo drag."
         })
       } else {
-        output$text_7 <- NULL
+        output$text_7 <- renderText({
+          paste("Pocakaj, resil ti bom problem TSP.")
+        })
       }
         
       output$text_8 <- renderText({
-        "To je cena najcenejse poti trgovskega potnika."
+        "To je cena najcenejse poti trgovskega potnika:"
       })
-      output$TSP <- renderUI ({
-        PTP(df_react$graf, input$start, matrika_utezi)
-      })
-      }
       
-    })
+      dolzina <- PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
+      
+      output$TSP <- renderUI({
+        PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
+      }) 
+      
+      output$pot <- renderGvis({
+        data <- as.data.frame(PTP(df_react$graf$network, input$start, matrika_utezi)$pot)
+        gvisTable(data)
+      })
+      
+      if (dolzina > 10000){
+        output$text_9 <- renderText({
+            "Najcenejsega obhoda na tvojem grafu ni!"
+        })
+        } else {
+        output$text_9 <- NULL
+        }
+      
+      
+      
+      
+        
+
+   }
+ })
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-  
-  
-  
-  
-  
-  
-  }
+}    

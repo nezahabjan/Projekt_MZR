@@ -130,8 +130,9 @@ body <- dashboardBody(
             
             mainPanel(
               textOutput("text_8"),
-              uiOutput("TSP")
-              
+              uiOutput("TSP"),
+              textOutput("text_9"),
+              htmlOutput("pot")
               
               
             ))

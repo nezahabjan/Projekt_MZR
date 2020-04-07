@@ -10,14 +10,18 @@ narisi_izbor <- function(n, p, directed){
   #vnesemo izbor grafa, stevilo vozlisc (n), stevilo povezav (p), usmerjenost
   #dobimo nakljucno matriko velikosti nxn, ki vsebuje p enic, torej p povezav v grafu - AJD_matrika je vedno kvadratna, ker je to povezavna matrika!!
     if (directed ==1){
-      mode <- "undirected"
+      mode <- "FALSE"
     } else if (directed ==2){
-      mode <- "directed"
+      mode <- "TRUE"
     }
-    data <- zeros(n,n)
-    data[randperm(n*n, p)]=1
-    network <- graph_from_adjacency_matrix(data, mode = mode, diag = FALSE)
-    set_vertex_attr(network, "label", value = letters[1:n])
+  network <- erdos.renyi.game(n, p, type="gnm", directed =mode)
+  matrika <- get.adjacency(network)
+  
+  
+    #data <- zeros(n,n)
+    #data[randperm(n*n, p)]=1
+    #network <- graph_from_adjacency_matrix(data, mode = mode, diag = FALSE)
+    #set_vertex_attr(network, "label", value = letters[1:n])
     #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
@@ -43,7 +47,7 @@ narisi_pripravljen <- function(adj_matrika, directed){
   }
   data <- adj_matrika
   network <- graph_from_adjacency_matrix(data, mode = directed, diag = TRUE)
-  set_vertex_attr(network, "label", value = letters[1:dim(matrika)[1]])
+  #set_vertex_attr(network, "label", value = letters[1:dim(matrika)[1]])
   #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
@@ -203,6 +207,29 @@ dvodelen <- function(graf){
 
 
 # problem trgovskega potnika
+sestavi_matriko_utezi <- function(graf, vektor){
+  data_edge <- as.data.frame(get.edgelist(graf, names=TRUE))
+  num_oglisc <- length(V(graf))
+  
+  matrika_utezi <- zeros(num_oglisc)
+  for (vrstica in 1:dim(data_edge)[1]){
+    i <- data_edge[vrstica,][[1]]
+    j <- data_edge[vrstica,][[2]]
+    matrika_utezi[i,j]<- vektor[vrstica]
+  }
+  for (i in 1:num_oglisc){
+    for (j in 1:num_oglisc){
+      if (matrika_utezi[i,j] == 0){
+        matrika_utezi[i,j] <- 10000
+      }
+    }
+  }
+  
+  diag(matrika_utezi) <- 0
+  return(matrika_utezi)
+  
+}
+
 PTP <- function(graf, v1, matrika_utezi){
   #preberemo povezavno matriko grafa
   #matrika <- graf$matrika
@@ -219,8 +246,9 @@ PTP <- function(graf, v1, matrika_utezi){
 
   tour <- solve_TSP(ATSP(matrika_utezi), method="nearest_insertion", start=v1)
   #tour <- solve_TSP(TSP(distances(graf_tsp_final)), method = "two_opt", start = v1)
-  View(tour)
-  return(list("dolzina"=tour_length(tour)))
+  
+  
+  return(list("dolzina"=tour_length(tour), "pot"=tour))
   
 }
 
