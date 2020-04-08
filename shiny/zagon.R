@@ -13,6 +13,10 @@ library(TSP)
 library(pracma)
 library(randomGLM)
 library(googleVis)
+library(colormap)
+library(colortools)
+library(lpSolve)
+
 
 
 #datoteke, na katere se sklicujemo v aplikaciji

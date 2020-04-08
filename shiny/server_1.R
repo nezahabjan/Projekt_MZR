@@ -237,18 +237,18 @@ server <- function(input, output) {
       
       dolzina <- PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
       
-      output$TSP <- renderUI({
+      output$TSP <- renderText({
         PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
       }) 
       
-      output$pot <- renderGvis({
-        data <- as.data.frame(PTP(df_react$graf$network, input$start, matrika_utezi)$pot)
-        gvisTable(data)
+      output$pot <- renderText({
+        labels(PTP(df_react$graf$network, input$start, matrika_utezi)$pot)
+        
       })
       
       if (dolzina > 10000){
         output$text_9 <- renderText({
-            "Najcenejsega obhoda na tvojem grafu ni!"
+            "Graf ima zelo malo povezav, zato najcenejsega obhoda na tvojem grafu ni!"
         })
         } else {
         output$text_9 <- NULL
@@ -262,4 +262,9 @@ server <- function(input, output) {
    }
  })
     
+  
+  
+  
+  
+  
 }    

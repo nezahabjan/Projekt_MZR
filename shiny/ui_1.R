@@ -107,7 +107,7 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.problem =='1'",
-                p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi"),
+                p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi. Te lahko predstavljajo ceno voznje, porabljen cas, energijo, kolicino nafte,..."),
                 
                 textOutput("text_5"),
                 htmlOutput("edges"),
@@ -127,9 +127,9 @@ body <- dashboardBody(
             
             mainPanel(
               textOutput("text_8"),
-              uiOutput("TSP"),
+              verbatimTextOutput("TSP"),
               textOutput("text_9"),
-              htmlOutput("pot")
+              textOutput("pot")
               
               
             ))

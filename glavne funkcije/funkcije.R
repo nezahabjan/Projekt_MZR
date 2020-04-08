@@ -1,6 +1,5 @@
 
 ## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
-# SPLOSNE FUNKCIJE
 
 
 ### najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
@@ -206,6 +205,32 @@ dvodelen <- function(graf){
 
 ### RESEVANJE PROBLEMOV:
 # problem barvanja grafa
+## funkcija vrne najmanjse stevilo barv, s katerimi lahko pobarvamo graf - kromaticno stevilo grafa
+## izrise nam obarvan graf in poda seznam vozlisc, s pripadajocimi barvami
+kromaticno_stevilo <- function(g) {
+  #najvecje mozno kromaticno stevilo je stevilo vozlisc grafa
+  vse_barve <- c(1:length(V(g)))
+  V(g)$color <- c(0)
+  v_zaporedje <- order(degree(g), decreasing = TRUE)
+  "%ni%" <- Negate("%in%")
+  lapply(v_zaporedje, function(i) V(g)$color[i] <<- min(vse_barve[vse_barve %ni%
+                                                                 sapply(neighbors(g, i), function(j) {
+                                                                   V(g)$color[j]
+                                                                 })]))
+  barvanje <- V(g)$color
+  names(barvanje) <- V(g)
+  
+  g <- g %>% set_vertex_attr("color", value = barvanje)
+
+  return(list("krom_stevilo" = max(V(g)$color), "barvanje" = barvanje, "slika"=g))
+}
+
+
+
+# ravninskost grafa
+plot(g_1b, layout=layout.fruchterman.reingold)
+
+
 
 
 # problem trgovskega potnika
@@ -253,6 +278,6 @@ PTP <- function(graf, v1, matrika_utezi){
   return(list("dolzina"=tour_length(tour), "pot"=tour))
   
 }
-
+# dodaj izris poti
 
 
