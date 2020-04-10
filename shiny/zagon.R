@@ -1,6 +1,5 @@
 ### to je glavna skripta za zagon aplikacije
 
-
 #knjiznice, ki jih potrebujemo
 library(RBGL)
 library(igraph)

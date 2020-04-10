@@ -101,22 +101,22 @@ server <- function(input, output) {
       })
       
     } else if (input$characteristic == 2){
-      if (is_directed(df_react$graf)=="TRUE" & DAG(df_react$graf) == "TRUE"){
-        output$text_4 <- renderText({
-          "Tvoj graf je aciklicen usmerjen graf!"
-        })
-      }
-
-      output$poizvedba <- renderUI({
-        seznam_ciklov <- najdi_cikle(df_react$graf$network)
-        vsi <- list()
-        for (cikel in (1:length(seznam_ciklov))){
-          vsi[cikel] <- seznam_ciklov[[cikel]]
-        }
-        print(vsi)
-      })
+      output$ciklicnost <- renderText({
+        cikli <- poisci_cikle(df_react$graf$network)
+        paste(cikli)
+          })
       
-    } else if (input$characteristic == 3){
+      if (is_directed(df_react$graf$network)=="TRUE" & DAG(df_react$graf$network) == "TRUE"){
+        output$text_4 <- renderText({
+          "Tvoj graf je acikličen in usmerjen!"
+           })
+      } else {
+        output$text_4 <- renderText({
+          "Tu je seznam ciklov grafa:"
+        })
+        }
+      
+      } else if (input$characteristic == 3){
       stevilo_povezav <- povezave(df_react$graf$network)
       output$text_4 <- renderText({
         paste("Tvoj graf ima", stevilo_povezav, "povezav.")

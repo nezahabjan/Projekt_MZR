@@ -113,9 +113,10 @@ poisci_cikle <- function(g){
   izbrani_cikli = hash()
   stevilo <- 0
   for (i in V(g)){
-    
+    if (length(neighbors(g,i)) > 0){
     for (j in neighbors(g,i)){
-      if (are_adjacent(g, j,i)){
+      
+      if (are_adjacent(g,j,i)){
         cikli <- all_simple_paths(g,i,j)
         cikli <- lapply(cikli, function(x) c(j, x))
         dobri_cikli <- cikli[which(sapply(cikli, length) > 3)]
@@ -129,8 +130,6 @@ poisci_cikle <- function(g){
         if (length(dobri_cikli)>1){
           
           for (kandidat in range(1:length(dobri_cikli))){
-            #print(dobri_cikli[kandidat])
-            
             if (dobri_cikli[kandidat] %in% values(izbrani_cikli)){
               #print("Ta cikel že imamo")
             } else {
@@ -146,10 +145,16 @@ poisci_cikle <- function(g){
       
     }
     
-    #}
+    }
     
   }
-  return(izbrani_cikli)
+  if (length(izbrani_cikli)==0){
+    rezultat <- list()
+  } else {
+    rezultat <- values(izbrani_cikli)
+  }
+  
+  return(rezultat)
 }
 
 
@@ -360,7 +365,7 @@ play_PUL <- function(g,x,y,board, korak){
   start_board %>% play(matrix = poskus$entries)
   return(poskus)
 }
-korak = korak + 1
+#korak = korak + 1
 
 
 

@@ -86,6 +86,7 @@ body <- dashboardBody(
             
             mainPanel(
               textOutput("text_4"),
+              textOutput("ciklicnost"),
               tabPanel("Poizvedba", uiOutput("poizvedba"))
 
               
