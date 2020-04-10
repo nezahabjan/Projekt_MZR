@@ -2,6 +2,7 @@
 
 
 #knjiznice, ki jih potrebujemo
+library(RBGL)
 library(igraph)
 library(ggraph)
 library(networkD3)
@@ -16,6 +17,10 @@ library(googleVis)
 library(colormap)
 library(colortools)
 library(lpSolve)
+library(DiagrammeR)
+library(lightsout)
+
+
 
 
 

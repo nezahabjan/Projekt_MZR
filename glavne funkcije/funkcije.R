@@ -55,34 +55,6 @@ narisi_pripravljen <- function(adj_matrika, directed){
 
 
 # B) koliksne so stopnje oglisc?
-stopnje_2 <- function(graf){
-  seznam <- list()
-  network <- graf$network
-  directed <- is_directed(graf)
-  matrika <- graf$matrika
-    if (directed == "1" | directed == "FALSE"){
-      # v primeru, da imamo opravka z neusmerjenim grafom je vsaka povezava do vozlisca ena stopnja vec
-      for (x in 1:length(V(graf))){
-        vozlisce <- names(V(graf))
-        stopnja <- length(network[[vozlisce]][[1]])
-        seznam[vozlisce] <- stopnja 
-      } 
-    } else if (directed =="2" | directed == "TRUE"){
-      # v primeru, ko je nas graf usmerjen, delimo stopnje na vhodne in izhodne
-      #matrika_grafa <- get.adjacency(graf)
-      for (element in rownames(matrika)){
-      izhodna <- sum(matrika[element,])
-      vhodna <- sum(matrika[,element])
-      #seznam <- rbind(seznam, c(element, c(vhodna, izhodna)))
-      seznam[element] <- list(c("vhodna"=vhodna, "izhodna"=izhodna))
-      }
-    }
-  
-
-  return(seznam)
-}
-
-#ta funkcija je uporabljena
 stopnje <- function(graf){
   seznam <- list()
   directed <- is_directed(graf)
@@ -107,7 +79,9 @@ povezave <- function(graf) {
 }
 
 
-# D) ali ima nas graf cikle? - funkcija je v redu za usmerjene grafe, preverja ce so usmerjeni aciklicni
+# D) ali ima nas graf cikle? 
+#funkcija preveri ali je usmerjen graf aciklicen ali ne
+#za neusmerjene preverja ali je drevo ali ne
 DAG <- function(graf){
   return(is_dag(graf))
 }
@@ -176,35 +150,27 @@ return(razdalja)
 
 
 # J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
-dvodelen_2 <- function(graf){
-  dvo <- bipartite.mapping(graf)[[1]]
-  if (dvo){
-    plot_1 <- bipartite.projection(graf)[[1]]
-    plot_2 <- bipartite.projection(graf)[[2]]
-    return(list("dvo"= dvo, "plot_1" = plot_1, "plot_2" = plot_2))
-  } else {
-    return(list("dvo"=dvo))
-  }
-}
-
 dvodelen <- function(graf){
   dvo <- bipartite.mapping(graf)[[1]]
   return(dvo)
 }
 
-# set_vertex_attr(graph, name, index = V(graph), value) za nastavitev utezi 
+
 # estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
 # automorphisms za iskanje avto ali izomorfisms izomorfizmov
 # bfs ali dfs za iskanje v globino
 # are_adjacent(graph, v1, v2) za preverjanje povezave med dvema toèkama grafa
-# all_simple_paths je funkcija, ki vrne vse enostavne poti med dvema toèkama
 # permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, èe ti ni všeè
 
 
 
 
+
+
+
+
 ### RESEVANJE PROBLEMOV:
-# problem barvanja grafa
+# a) problem barvanja grafa
 ## funkcija vrne najmanjse stevilo barv, s katerimi lahko pobarvamo graf - kromaticno stevilo grafa
 ## izrise nam obarvan graf in poda seznam vozlisc, s pripadajocimi barvami
 kromaticno_stevilo <- function(g) {
@@ -226,14 +192,21 @@ kromaticno_stevilo <- function(g) {
 }
 
 
+# b) ravninskost grafa
+#funkcija pove ali je graf ravninski ali ne, vsak graf najprej prevede na neusmerjenega.
+#lep prikaz je izris z layout.fruchterman.reingold()
+ravninski <- function(g){
+  g_nel <- as_graphnel(g)
+  planar <- boyerMyrvoldPlanarityTest(g_nel)
+  
+return(list("planar" = planar, "prikaz" = g))
+       
+}
 
-# ravninskost grafa
-plot(g_1b, layout=layout.fruchterman.reingold)
 
-
-
-
-# problem trgovskega potnika
+# c) problem trgovskega potnika
+#PTP je funkcija, ki vnesenemu grafu, zacetni tocki in matriki utezi(sestavljena iz inputa vektorja utezi) priredi problem trgovskega potnika in ga resi
+#vrne dolzino najkrajse poti in njen potek po vozliscih
 sestavi_matriko_utezi <- function(graf, vektor){
   data_edge <- as.data.frame(get.edgelist(graf, names=TRUE))
   num_oglisc <- length(V(graf))
@@ -256,7 +229,6 @@ sestavi_matriko_utezi <- function(graf, vektor){
   return(matrika_utezi)
   
 }
-
 PTP <- function(graf, v1, matrika_utezi){
   #preberemo povezavno matriko grafa
   #matrika <- graf$matrika
@@ -279,5 +251,94 @@ PTP <- function(graf, v1, matrika_utezi){
   
 }
 # dodaj izris poti
+
+
+# d) najkrajsa pot med izbranima vozliscema
+#funkcija vrne seznam najkrajsih poti in dolzino najkrajse
+najdi_najkrajso_pot <- function(g, iz, v, vect_utezi){
+  
+  vse_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)
+  dolzina <- min(distances(test$network, iz, v, weights = vect_utezi))
+  
+  return(list("dolzina"=dolzina, "poti"=vse_poti))
+
+}
+
+#funkcija nam vrne stevilo pojavov vozlisca v1 na vseh najkrajsih poteh med izbranima vozliscema
+pojavitve_na_min_poteh <- function(g, v1, iz, v, vect_utezi){
+  
+pojavitev <- sum(sapply(get.all.shortest.paths(g,iz,v, weights = vect_utezi)$res,function(x){v1 %in% x}))
+  
+return("pojavitev"=pojavitev)
+}
+
+
+
+# e) problem minimalne elektriène napeljave
+#resujemo s pomocjo iskanja minimalnega vpetega drevesa v grafu, funkcija vrne drevo ki predstavlja napeljavo
+#dobimo tudi ceno napeljave po tem minimalnem drevesu
+PMEN <- function(g, vect_utezi){
+  g <- g %>% set_edge_attr("weight", value = vect_utezi)
+   min_drevo <- mst(g, weights=vect_utezi)
+   cena <- sum(E(min_drevo)$weight)
+   
+   return(list("cena"=cena, "napeljava"=min_drevo))
+}
+
+
+
+# f) problem ugasanja luci
+#igramo igro na grafu, pri kateri moramo ugasniti vse luci, kar pomeni da postavimo vse elemente matrike na 0
+#igro se igra le na grafih, ki imajo liho stevilo oglisc, usmerjenost pa ni pomembna
+#koncu vidimo v funkciji PUL tudi resitev igre, podana je z matriko, ki vsebuje 1 na mestih, ki morajo biti prizgana, ni vazno v kaksnem vrstnem redu
+PUL <- function(g){
+  #funkcija nam pove ali je igra resljiva in poda resitev, ce jo zelimo videti
+  
+  if (length(E(g)) %% 2 == 0){
+    print("Problem resujemo le na grafih z lihim stevilom vozlisc!")
+  } else {
+    print("Tvoj graf je pravih dimenzij za resevanje problema")
+  }
+ 
+  board <- new_board(get.adjacency(g))
+
+  if (is_solvable(board) == FALSE){
+    print("Problem na tvojem grafu ni resljiv!")
+    
+  } else {
+    print("Problem ima resitev, zacniva z igro!")
+  }
+  
+  resitev <- solve_board(board)
+  return(list("resitev"=resitev))
+}
+
+#ta funkcija je funkcija, ki sprejme mesto zarnice ki jo kliknemo, graf na katerem delamo poskus, 
+#stopnjo igre speljano do sedaj (board) in korak na katerem smo (stevilka poskusa)
+play_PUL <- function(g,x,y,board, korak){
+  start_board <- new_board(get.adjacency(g))
+  if (korak > 1){
+    poskus <- board %>% play(x,y)
+  } else if (korak == 1){
+    poskus <- start_board %>% play(x,y)
+  }
+  start_board %>% play(matrix = poskus$entries)
+  return(poskus)
+}
+korak = korak + 1
+
+
+find_cycle <- function(g, start_edge){
+iskanje <- dfs(g,start_edge)$order
+for (i in iskanje){
+  
+  predniki <- dfs(g,i, father=TRUE)$father
+  
+  
+}
+}
+
+
+
 
 
