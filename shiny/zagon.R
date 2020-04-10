@@ -19,7 +19,7 @@ library(colortools)
 library(lpSolve)
 library(DiagrammeR)
 library(lightsout)
-
+library(hash)
 
 
 

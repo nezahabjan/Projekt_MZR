@@ -25,7 +25,6 @@ narisi_izbor <- function(n, p, directed){
     #plot(network)
   return (list("network"=network, "directed"=mode, "matrika"=data))
 }
-
 narisi_poln <- function(n, dir){
   if (dir == 1) {
     directed <- "FALSE"
@@ -81,13 +80,10 @@ povezave <- function(graf) {
 
 # D) ali ima nas graf cikle? 
 #funkcija preveri ali je usmerjen graf aciklicen ali ne
-#za neusmerjene preverja ali je drevo ali ne
+#tretja funkcija poisce vse cikle in jih izpise
 DAG <- function(graf){
   return(is_dag(graf))
 }
-    
-
-# E) funkcija dela v redu ampak potrebno je izlo?iti iz rezultata cikle, ki se ponovijo le v drugem vrstnem redu!
 najdi_cikle <- function(graf) {
   Cikli = list()
   for(v1 in V(graf$network)) {
@@ -113,6 +109,49 @@ najdi_cikle <- function(graf) {
     
   }
 }
+poisci_cikle <- function(g){
+  izbrani_cikli = hash()
+  stevilo <- 0
+  for (i in V(g)){
+    
+    for (j in neighbors(g,i)){
+      if (are_adjacent(g, j,i)){
+        cikli <- all_simple_paths(g,i,j)
+        cikli <- lapply(cikli, function(x) c(j, x))
+        dobri_cikli <- cikli[which(sapply(cikli, length) > 3)]
+        
+        
+        #grem po vseh do sedaj izbranih ciklih
+        #print(izbrani_cikli)
+        #for (cikel in range(1:length(izbrani_cikli))){
+        
+        #ce je kaksen kandidat v dobrih ciklih preverim ali je ta ze izbran ali ne
+        if (length(dobri_cikli)>1){
+          
+          for (kandidat in range(1:length(dobri_cikli))){
+            #print(dobri_cikli[kandidat])
+            
+            if (dobri_cikli[kandidat] %in% values(izbrani_cikli)){
+              #print("Ta cikel že imamo")
+            } else {
+              #print("ta cikel gre med izbrane")
+              stevilo <- stevilo + 1
+              izbrani_cikli[as.character(stevilo)] <- dobri_cikli[kandidat]
+              
+            }
+          }
+        }
+      }
+      
+      
+    }
+    
+    #}
+    
+  }
+  return(izbrani_cikli)
+}
+
 
 
 # F) funkcija vrne najdaljso pot v grafu
@@ -158,8 +197,6 @@ dvodelen <- function(graf){
 
 # estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
 # automorphisms za iskanje avto ali izomorfisms izomorfizmov
-# bfs ali dfs za iskanje v globino
-# are_adjacent(graph, v1, v2) za preverjanje povezave med dvema toèkama grafa
 # permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, èe ti ni všeè
 
 
@@ -263,7 +300,6 @@ najdi_najkrajso_pot <- function(g, iz, v, vect_utezi){
   return(list("dolzina"=dolzina, "poti"=vse_poti))
 
 }
-
 #funkcija nam vrne stevilo pojavov vozlisca v1 na vseh najkrajsih poteh med izbranima vozliscema
 pojavitve_na_min_poteh <- function(g, v1, iz, v, vect_utezi){
   
@@ -312,7 +348,6 @@ PUL <- function(g){
   resitev <- solve_board(board)
   return(list("resitev"=resitev))
 }
-
 #ta funkcija je funkcija, ki sprejme mesto zarnice ki jo kliknemo, graf na katerem delamo poskus, 
 #stopnjo igre speljano do sedaj (board) in korak na katerem smo (stevilka poskusa)
 play_PUL <- function(g,x,y,board, korak){
@@ -326,17 +361,6 @@ play_PUL <- function(g,x,y,board, korak){
   return(poskus)
 }
 korak = korak + 1
-
-
-find_cycle <- function(g, start_edge){
-iskanje <- dfs(g,start_edge)$order
-for (i in iskanje){
-  
-  predniki <- dfs(g,i, father=TRUE)$father
-  
-  
-}
-}
 
 
 
