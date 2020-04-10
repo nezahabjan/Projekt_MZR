@@ -126,7 +126,6 @@ server <- function(input, output) {
     } else if (input$characteristic == 5){
       
       diam <- najdaljsa_razdalja(df_react$graf$network)
-      print(diam)
       output$text_4 <- renderText({
         paste("Najdaljsa razdalja v grafu meri", diam ,"enot.") 
       })
@@ -135,7 +134,6 @@ server <- function(input, output) {
     } else if (input$characteristic == 6){
       
       radij <- najkrajsa_razdalja(df_react$graf$network)
-      print(radij)
       output$text_4 <- renderText({
         paste("Najkrajsa razdalja v grafu meri", radij ,"enot.") 
       })
@@ -164,7 +162,6 @@ server <- function(input, output) {
       komp <- komponente(df_react$graf$network)
       output$text_4 <- renderText({
         paste(komp)
-        
       })
       
       
@@ -182,33 +179,53 @@ server <- function(input, output) {
   
   observeEvent(input$problem,{
     req(df_react$graf)
+    
+    
     if (input$problem == 1){
+      #resujemo problem trgovskega potnika
       output$text_5 <- renderText({
         "Utezi doloci po vrsti, spodaj prikazanim povezavam iz vozlisc v1 v v2."
       })
-      
-      output$edges <- renderGvis({
+      output$edges_1 <- renderGvis({
       data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
        gvisTable(data)
        })
       
+      
+    } else if (input$problem == 4){
+      output$edges_2 <- renderGvis({
+        data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
+        gvisTable(data)
+      })
+    
+      
+    } else if (input$problem == 5){
+      output$edges_3 <- renderGvis({
+        data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
+        gvisTable(data)
+      })
     }
-    
-    
-    
+  
    })
-    
+  
+  
+  
+  
   observeEvent(input$button4, {
       #vzamemo graf, ki je trenutno v uporabi
       req(df_react$graf)
 
+    
+    
+    
       if (input$problem == 1){
+      # resujemo problem trgovskega potnika
+        
       #preberemo vnesene utezi uporabnika
-      vect_utezi <- as.numeric(unlist(strsplit(input$utezi, ",")))
-      
-      #### sestavimo matriko utezi
+      vect_utezi <- as.numeric(unlist(strsplit(input$utezi_1, ",")))
+      ### sestavimo matriko utezi
       matrika_utezi <- sestavi_matriko_utezi(df_react$graf$network, vect_utezi)
-      #### matriko uporabimo kot cene v TSP
+      ### matriko uporabimo kot cene v TSP
       
       if (length(vect_utezi) != length(E(df_react$graf$network))){
         output$text_6 <- renderText({
@@ -218,7 +235,7 @@ server <- function(input, output) {
         output$text_6 <- renderText({
           "Super, vsaki povezavi grafa sedaj pripada tocno ena vrednost."
         })
-        }
+      }
       
       # postavimo omejitev, da graf sploh vsebuje zacetno vozlisce in da ima vsaj 2 originalna soseda, sicer bo obhod zelo drag
       if (input$start > length(E(df_react$graf$network)) | length(neighbors(df_react$graf$network, input$start))<2){
@@ -230,22 +247,18 @@ server <- function(input, output) {
           paste("Pocakaj, resil ti bom problem TSP.")
         })
       }
-        
       output$text_8 <- renderText({
         "To je cena najcenejse poti trgovskega potnika:"
       })
-      
       dolzina <- PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
-      
       output$TSP <- renderText({
         PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
       }) 
-      
       output$pot <- renderText({
         labels(PTP(df_react$graf$network, input$start, matrika_utezi)$pot)
-        
       })
       
+      # razlozimo kaj pomeni drag obhod
       if (dolzina > 10000){
         output$text_9 <- renderText({
             "Graf ima zelo malo povezav, zato najcenejsega obhoda na tvojem grafu ni!"
@@ -259,12 +272,134 @@ server <- function(input, output) {
       
         
 
-   }
+      } else if (input$problem == 2){
+    # resujemo problem barvanja grafa
+     
+        output$krom_num <- renderText({
+          paste("Tvoj graf lahko obarvamo z najmanj", kromaticno_stevilo(df_react$graf$network)$krom_stevilo, "barvami. Resitev vidis spodaj!")
+        })
+        output$barvanje <- renderPlot(
+          plot(kromaticno_stevilo(df_react$graf$network)$slika)
+          )
+
+        
+        
+        
+        
+      } else if (input$problem == 3){
+        # resujemo problem ravninskosti grafa
+        
+        if (ravninski(df_react$graf$network)$planar == TRUE){
+          output$planarity <- renderText({
+            "Tvoj graf je ravninski. Prepricaj se iz spodnje slike."
+          })
+        } else if (ravninski(df_react$graf$network)$planar == FALSE){
+          output$planarity <- renderText({
+            "Tvoj graf ni ravninski. Prepricaj se iz spodnje slike."
+          })
+        }
+        output$ravnina <- renderPlot(
+          plot(df_react$graf$network, layout = layout.fruchterman.reingold)
+        )
+        
+        
+        
+        
+        
+        
+      } else if (input$problem == 4){
+        # resujemo problem iskanja najcenejse poti med dvema vozliscema
+        
+        vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
+        output$najceneje <- renderText({
+          dolzina <- najdi_najkrajso_pot(df_react$graf$network, input$zacni, input$finish, vect_utezi)$dolzina
+          paste("Najcenejsa pot stane", dolzina, "enot.")
+        })
+        output$poti <- renderText({
+          vse_poti <- najdi_najkrajso_pot(df_react$graf$network, input$start, input$finish, vect_utezi)$poti
+        })
+        
+        
+        
+        
+        
+        
+        
+      } else if (input$problem == 5){
+        # resujemo problem minimalne elektricne napeljave
+        
+        vect_utezi <- as.numeric(unlist(strsplit(input$utezi_3, ",")))
+        output$min_cena <- renderText({
+          cena <- PMEN(df_react$graf$network, vect_utezi)$cena
+          paste("Najcenejsa elektricna napeljava stane", cena, "enot.")
+        })
+        output$napeljava <- renderPlot(
+          plot(PMEN(df_react$graf$network, vect_utezi)$napeljava)
+        )
+        
+        
+        
+        
+        
+        
+        
+      } else if (input$problem == 6){
+        # resujemo problem ugasanja luci
+        
+        
+        
+        
+        
+        
+      }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
  })
     
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
   
   
 }    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

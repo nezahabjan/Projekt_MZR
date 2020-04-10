@@ -100,37 +100,103 @@ body <- dashboardBody(
     tabItem(tabName = "problemi",
             
             fluidRow(sidebarPanel(
-              h3("Bi rad na svojem grafu resil kaksen problem?"),
+              h3("Bi rad na svojem grafu modeliral kaksen problem?"),
               
               selectInput("problem", "Katerega od problemov se bos lotil?",
-                          choices = list("Problem trgovskega potnika" = 1,"/"=2), selected = 2),
-              
+                          choices = list("Problem trgovskega potnika" = 1,
+                                         "Barvanje grafa"=2,
+                                         "Ravninskost grafa"=3,
+                                         "Iskanje najcenejse poti"=4,
+                                         "Problem minimalne elektricne napeljave"=5,
+                                         "Problem ugasanja luci" = 6), selected = 3),
               
               conditionalPanel(
                 condition = "input.problem =='1'",
                 p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi. Te lahko predstavljajo ceno voznje, porabljen cas, energijo, kolicino nafte,..."),
-                
                 textOutput("text_5"),
-                htmlOutput("edges"),
-                
-                textInput("utezi", "Vsaka povezava v povezavni matriki naj dobi svojo utez!", value=""),
-
+                htmlOutput("edges_1"),
+                textInput("utezi_1", "Vsaka povezava v povezavni matriki naj dobi svojo utez!", value=""),
                 textOutput("text_6"),
                 numericInput("start", "Vnesi vozlisce, kjer naj trgovski potnik zacne s potjo!", value=0, min=0),
-
                 textOutput("text_7")
               ),
               
-              actionButton("button4", "Resi problem")
+              conditionalPanel(
+                condition = "input.problem =='2'",
+                p("Te zanima kromaticno stevilo tvojega grafa? Pa poglejva...")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='3'",
+                p("Te zanima ce je tvoj graf ravninski? Pa poglejva...")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='4'",
+                p("Lotil si se iskanja najcenejse poti med dvema vozliscema. Najprej mi moras povedati kateri dve vozlisci naj gledam."),
+                numericInput(inputId = "zacni", "Vnesi stevilko vozlisca, ki naj bo zacetek poti.", value = 0, min=0),
+                numericInput(inputId = "finish", "Vnesi stevilko vozlisca, ki naj bo konec poti.", value = 0, min=0),
+                p("Sedaj pa povezavam v grafu doloci cene. Vsaka povezava iz spodnjega seznama naj dobi svojo vrednost! Ce cen ne zelis prosim vpisi besedico 'NULL'"),
+                htmlOutput("edges_2"),
+                textInput("utezi_2", "Vnesi vrednosti.", value="")
+                ),
+              
+              conditionalPanel(
+                condition = "input.problem =='5'",
+                p("Lotil si se resevanja problema minimalne elektricne napeljave po mestih. Potreboval bom utezi na posameznih povezavah grafa."),
+                htmlOutput("edges_3"),
+                textInput("utezi_3", "Vnesi vrednosti.", value="")
+              ),
+              
+              
+              actionButton("button4", "Resi problem"),
+              
+              conditionalPanel(
+                condition = "input.problem =='4'",
+                p("Preveris lahko tudi, kolikokrat se med najkrajsimi potmi pojavi izbrano vozlisce"),
+                numericInput(inputId = "pojav", "Vnesi stevilko vozlisca, katerega uporabnost te zanima.", value = 0),
+                actionButton("button5", "Preveri pogostost")
+               )
               
               
             ),
             
             mainPanel(
-              textOutput("text_8"),
-              verbatimTextOutput("TSP"),
-              textOutput("text_9"),
-              textOutput("pot")
+              
+              conditionalPanel(
+                condition = "input.problem =='1'",
+                textOutput("text_8"),
+                verbatimTextOutput("TSP"),
+                textOutput("text_9"),
+                textOutput("pot")
+                ),
+              
+              conditionalPanel(
+                condition = "input.problem =='2'",
+                textOutput("krom_num"),
+                plotOutput("barvanje")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='3'",
+                textOutput("planarity"),
+                plotOutput("ravnina")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='4'",
+                textOutput("najceneje"),
+                textOutput("poti"),
+                textOutput("pogostost")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='5'",
+                textOutput("min_cena"),
+                plotOutput("napeljava")
+              )
+              
+              
               
               
             ))

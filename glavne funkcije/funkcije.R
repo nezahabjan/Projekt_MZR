@@ -212,41 +212,7 @@ dvodelen <- function(graf){
 
 
 ### RESEVANJE PROBLEMOV:
-# a) problem barvanja grafa
-## funkcija vrne najmanjse stevilo barv, s katerimi lahko pobarvamo graf - kromaticno stevilo grafa
-## izrise nam obarvan graf in poda seznam vozlisc, s pripadajocimi barvami
-kromaticno_stevilo <- function(g) {
-  #najvecje mozno kromaticno stevilo je stevilo vozlisc grafa
-  vse_barve <- c(1:length(V(g)))
-  V(g)$color <- c(0)
-  v_zaporedje <- order(degree(g), decreasing = TRUE)
-  "%ni%" <- Negate("%in%")
-  lapply(v_zaporedje, function(i) V(g)$color[i] <<- min(vse_barve[vse_barve %ni%
-                                                                 sapply(neighbors(g, i), function(j) {
-                                                                   V(g)$color[j]
-                                                                 })]))
-  barvanje <- V(g)$color
-  names(barvanje) <- V(g)
-  
-  g <- g %>% set_vertex_attr("color", value = barvanje)
-
-  return(list("krom_stevilo" = max(V(g)$color), "barvanje" = barvanje, "slika"=g))
-}
-
-
-# b) ravninskost grafa
-#funkcija pove ali je graf ravninski ali ne, vsak graf najprej prevede na neusmerjenega.
-#lep prikaz je izris z layout.fruchterman.reingold()
-ravninski <- function(g){
-  g_nel <- as_graphnel(g)
-  planar <- boyerMyrvoldPlanarityTest(g_nel)
-  
-return(list("planar" = planar, "prikaz" = g))
-       
-}
-
-
-# c) problem trgovskega potnika
+# a) problem trgovskega potnika
 #PTP je funkcija, ki vnesenemu grafu, zacetni tocki in matriki utezi(sestavljena iz inputa vektorja utezi) priredi problem trgovskega potnika in ga resi
 #vrne dolzino najkrajse poti in njen potek po vozliscih
 sestavi_matriko_utezi <- function(graf, vektor){
@@ -274,7 +240,7 @@ sestavi_matriko_utezi <- function(graf, vektor){
 PTP <- function(graf, v1, matrika_utezi){
   #preberemo povezavno matriko grafa
   #matrika <- graf$matrika
-
+  
   #preberemo komplement grafa in njegovo matriko povezav
   #graf_kompl <- complementer(graf$network)
   #matrika_kompl <- get.adjacency(graf_kompl)
@@ -284,7 +250,7 @@ PTP <- function(graf, v1, matrika_utezi){
   #E(graf_tsp)$weight <- vect_utezi
   
   #graf_tsp_final <- add.edges(graf_tsp, get.edgelist(graf_kompl), weight=rep(10000, length(E(graf_kompl))))
-
+  
   tour <- solve_TSP(ATSP(matrika_utezi), method="nearest_insertion", start=v1)
   #tour <- solve_TSP(TSP(distances(graf_tsp_final)), method = "two_opt", start = v1)
   
@@ -295,21 +261,60 @@ PTP <- function(graf, v1, matrika_utezi){
 # dodaj izris poti
 
 
+# b) problem barvanja grafa
+## funkcija vrne najmanjse stevilo barv, s katerimi lahko pobarvamo graf - kromaticno stevilo grafa
+## izrise nam obarvan graf in poda seznam vozlisc, s pripadajocimi barvami
+kromaticno_stevilo <- function(g) {
+  #najvecje mozno kromaticno stevilo je stevilo vozlisc grafa
+  vse_barve <- c(1:length(V(g)))
+  V(g)$color <- c(0)
+  v_zaporedje <- order(degree(g), decreasing = TRUE)
+  "%ni%" <- Negate("%in%")
+  lapply(v_zaporedje, function(i) V(g)$color[i] <<- min(vse_barve[vse_barve %ni%
+                                                                 sapply(neighbors(g, i), function(j) {
+                                                                   V(g)$color[j]
+                                                                 })]))
+  barvanje <- V(g)$color
+  names(barvanje) <- V(g)
+  
+  g <- g %>% set_vertex_attr("color", value = barvanje)
+
+  return(list("krom_stevilo" = max(V(g)$color), "barvanje" = barvanje, "slika"=g))
+}
+
+
+# c) ravninskost grafa
+#funkcija pove ali je graf ravninski ali ne, vsak graf najprej prevede na neusmerjenega.
+#lep prikaz je izris z layout.fruchterman.reingold()
+ravninski <- function(g){
+  g <- as.undirected(g)
+  g_nel <- as_graphnel(g)
+  planar <- boyerMyrvoldPlanarityTest(g_nel)
+  
+return(list("planar" = planar))
+       
+}
+
+
+
 # d) najkrajsa pot med izbranima vozliscema
 #funkcija vrne seznam najkrajsih poti in dolzino najkrajse
 najdi_najkrajso_pot <- function(g, iz, v, vect_utezi){
   
-  vse_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)
-  dolzina <- min(distances(test$network, iz, v, weights = vect_utezi))
+  stevilo_vseh_poti <- suppressWarnings(length(all_shortest_paths(g, iz, v, weights=vect_utezi)$res))
+  if (stevilo_vseh_poti == 0){
+    vse_poti <- list()
+  } else {
+    vse_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)$res
+  }
+  dolzina <- min(distances(g, iz, v, weights = vect_utezi))
   
   return(list("dolzina"=dolzina, "poti"=vse_poti))
 
 }
 #funkcija nam vrne stevilo pojavov vozlisca v1 na vseh najkrajsih poteh med izbranima vozliscema
 pojavitve_na_min_poteh <- function(g, v1, iz, v, vect_utezi){
-  
-pojavitev <- sum(sapply(get.all.shortest.paths(g,iz,v, weights = vect_utezi)$res,function(x){v1 %in% x}))
-  
+   pojavitev <- sum(sapply(get.all.shortest.paths(g,iz,v, weights = vect_utezi)$res,function(x){v1 %in% x}))
 return("pojavitev"=pojavitev)
 }
 
@@ -340,16 +345,13 @@ PUL <- function(g){
   } else {
     print("Tvoj graf je pravih dimenzij za resevanje problema")
   }
- 
   board <- new_board(get.adjacency(g))
-
+  
   if (is_solvable(board) == FALSE){
     print("Problem na tvojem grafu ni resljiv!")
-    
   } else {
     print("Problem ima resitev, zacniva z igro!")
   }
-  
   resitev <- solve_board(board)
   return(list("resitev"=resitev))
 }
