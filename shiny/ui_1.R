@@ -148,6 +148,30 @@ body <- dashboardBody(
                 textInput("utezi_3", "Vnesi vrednosti.", value="")
               ),
               
+              conditionalPanel(
+                condition = "input.problem =='6'",
+                p("Izbral si si igro ugasanja luci, ki jo bom modeliral s tvojim grafom. Najprej poglejva, ce igro na tvojem grafu sploh lahko igrava. Imeti mora namrec liho stevilo vozlisc, njegova povezavna matrika pa mora biti ustrezen zacetek igre."),
+                actionButton("button6", "Preveri resljivost"),
+                textOutput("solvable"),
+                selectInput("nadaljevanje", "Bos nadaljeval igro na ze zaceti, si izbral drug graf ali ti igro generiram jaz?",
+                            choices = list("nadaljuj"=1,
+                                           "izbral bom drug graf"=2,
+                                           "generiraj mi igro"=3,
+                                           "/"= 4), selected = 4),
+                textOutput("odlocitev"),
+                conditionalPanel(
+                  condition = "input.nadaljevanje =='3'",
+                  numericInput(inputId = "dimenzija", "Vrednost naj bo liha!", value = 0, min=0)
+                ),
+                
+                actionButton("button7", "Oglej si resitev"),
+                textOutput("resitev")
+              ),
+              
+              
+              
+              
+              
               
               actionButton("button4", "Resi problem"),
               
@@ -194,6 +218,12 @@ body <- dashboardBody(
                 condition = "input.problem =='5'",
                 textOutput("min_cena"),
                 plotOutput("napeljava")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='6'",
+              #  uiOutput("zacetna_igra")
+              
               )
               
               

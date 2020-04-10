@@ -48,7 +48,7 @@ server <- function(input, output) {
     }
   })
   
-  df_react <- reactiveValues(graf=NULL)
+  df_react <- reactiveValues(graf=NULL, igra=NULL)
   
   # nato mu narocimo, naj narise graf
   observeEvent( input$button1, {
@@ -204,9 +204,53 @@ server <- function(input, output) {
         data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
         gvisTable(data)
       })
-    }
-  
-   })
+      
+      
+    } else if (input$problem == 6){
+      observeEvent(input$button6, {
+        obstaja <- PUL(df_react$graf$network)$resljivo
+        if (obstaja == "DA"){
+          output$solvable <- renderText({
+            "Igro lahko igras na tvojem grafu, resitev obstaja."
+          })
+        } else if (obstaja == "NE"){
+          output$solvable <- renderText({
+            "Ta igra ni resljiva na tvojem grafu. Lahko si izberes drugega in poskusis ponovno, ali pa mi povej liho stevilo dimenzije matrike in podal ti bom nakljucen zacetek igre."
+          })
+        }
+      })
+      
+      observeEvent(input$nadaljevanje, {
+        output$odlocitev <- renderText({
+          if (input$nadaljevanje ==1){
+            paste("Dobro, potem nadaljujva z igro.")
+          } else if (input$nadaljevanje ==2){
+            paste("Vrni se potem na prvi zavihek in ponovno izberi graf.")
+          } else if (input$nadaljevanje ==3){
+            paste("V redu, doloci liho stevilo za dimenzijo matrike.")
+          }
+        })
+        if (input$nadaljevanje == 3){
+          output$zacetna_igra <- renderUI({
+            df_react$igra <- random_board(input$dimenzija)$entries
+          })
+        }
+      })
+      
+      observeEvent(input$button7, {
+        req(df_react$igra)
+        
+        output$resitev <- renderText({
+          if (input$nadaljevanje == 3){
+            solve_board(df_react$igra)
+          } else {
+            PUL(df_react$graf$network)$resitev
+          }
+        })
+      })
+
+   }
+    })
   
   
   
@@ -346,6 +390,48 @@ server <- function(input, output) {
       } else if (input$problem == 6){
         # resujemo problem ugasanja luci
         
+       observeEvent(input$button6, {
+            obstaja <- PUL(df_react$graf$network)$resljivo
+            if (obstaja == "DA"){
+              output$solvable <- renderText({
+                "Igro lahko igras na tvojem grafu, resitev obstaja."
+              })
+            } else if (obstaja == "NE"){
+              output$solvable <- renderText({
+                "Ta igra ni resljiva na tvojem grafu. Lahko si izberes drugega in poskusis ponovno, ali pa mi povej liho stevilo dimenzije matrike in podal ti bom nakljucen zacetek igre."
+              })
+        }
+       })
+
+        observeEvent(input$nadaljevanje, {
+          output$odlocitev <- renderText({
+            if (input$nadaljevanje ==1){
+              paste("Dobro, potem nadaljujva z igro.")
+            } else if (input$nadaljevanje ==2){
+              paste("Vrni se potem na prvi zavihek in ponovno izberi graf.")
+            } else if (input$nadaljevanje ==3){
+              paste("V redu, doloci liho stevilo za dimenzijo matrike.")
+            }
+          })
+          if (input$nadaljevanje == 3){
+            output$zacetna_igra <- renderUI({
+              df_react$igra <- random_board(input$dimenzija)$entries
+            })
+          }
+        })
+        
+        observeEvent(input$button7, {
+          req(df_react$igra)
+          
+          output$resitev <- renderText({
+            if (input$nadaljevanje == 3){
+              paste(solve_board(df_react$igra))
+            } else {
+              paste(PUL(df_react$graf$network)$resitev)
+            }
+          })
+          
+        })
         
         
         

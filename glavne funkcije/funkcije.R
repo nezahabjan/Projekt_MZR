@@ -341,19 +341,21 @@ PUL <- function(g){
   #funkcija nam pove ali je igra resljiva in poda resitev, ce jo zelimo videti
   
   if (length(E(g)) %% 2 == 0){
-    print("Problem resujemo le na grafih z lihim stevilom vozlisc!")
+    opomba <- "Problem resujemo le na grafih z lihim stevilom vozlisc!"
   } else {
-    print("Tvoj graf je pravih dimenzij za resevanje problema")
+    opomba <- "Tvoj graf je pravih dimenzij za resevanje problema"
   }
   board <- new_board(get.adjacency(g))
   
   if (is_solvable(board) == FALSE){
-    print("Problem na tvojem grafu ni resljiv!")
+    resljivo <- "NE"
+    resitev <- 0
   } else {
-    print("Problem ima resitev, zacniva z igro!")
+    resljivo <- "DA"
+    resitev <- solve_board(board)
   }
-  resitev <- solve_board(board)
-  return(list("resitev"=resitev))
+
+  return(list("resitev"=resitev, "resljivo"=resljivo, "opomba"=opomba))
 }
 #ta funkcija je funkcija, ki sprejme mesto zarnice ki jo kliknemo, graf na katerem delamo poskus, 
 #stopnjo igre speljano do sedaj (board) in korak na katerem smo (stevilka poskusa)
