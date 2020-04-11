@@ -340,11 +340,13 @@ PMEN <- function(g, vect_utezi){
 PUL <- function(g){
   #funkcija nam pove ali je igra resljiva in poda resitev, ce jo zelimo videti
   
-  if (length(E(g)) %% 2 == 0){
+  if (length(V(g)) %% 2 == 0){
     opomba <- "Problem resujemo le na grafih z lihim stevilom vozlisc!"
+    resitev <- 0
+    resljivo <- "NE"
   } else {
     opomba <- "Tvoj graf je pravih dimenzij za resevanje problema"
-  }
+
   board <- new_board(get.adjacency(g))
   
   if (is_solvable(board) == FALSE){
@@ -352,24 +354,29 @@ PUL <- function(g){
     resitev <- 0
   } else {
     resljivo <- "DA"
-    resitev <- solve_board(board)
+    resitev <- as.matrix(solve_board(board))
   }
-
+}
   return(list("resitev"=resitev, "resljivo"=resljivo, "opomba"=opomba))
 }
 #ta funkcija je funkcija, ki sprejme mesto zarnice ki jo kliknemo, graf na katerem delamo poskus, 
 #stopnjo igre speljano do sedaj (board) in korak na katerem smo (stevilka poskusa)
-play_PUL <- function(g,x,y,board, korak){
-  start_board <- new_board(get.adjacency(g))
-  if (korak > 1){
+play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
+  #pogledamo kaj smo imeli na zacetku
+  if (izbor_nadaljevanja == 1){
+    start_board <- new_board(get.adjacency(g))
+  } else if (izbor_nadaljevanja == 3){
+    start_board <- new_board(igra$entries)
+ }
+  
+    board <- new_board(matrika_stanj)
     poskus <- board %>% play(x,y)
-  } else if (korak == 1){
-    poskus <- start_board %>% play(x,y)
-  }
+  
   start_board %>% play(matrix = poskus$entries)
-  return(poskus)
+  vrni_poskus <- board_entries(poskus)
+  return(vrni_poskus)
 }
-#korak = korak + 1
+
 
 
 

@@ -161,12 +161,13 @@ body <- dashboardBody(
                 textOutput("odlocitev"),
                 conditionalPanel(
                   condition = "input.nadaljevanje =='3'",
-                  numericInput(inputId = "dimenzija", "Vrednost naj bo liha!", value =0, min=0),
-                  p("Tu je igra, ki jo resujes:"),
-                  htmlOutput("zacetna_igra"),
-                ),
+                  numericInput(inputId = "dimenzija", "Vrednost naj bo eno od stevil 3, 5, 7 ali 9!", value =0, min=0),
+                )
                 
-                actionButton("button7", "Oglej si resitev")
+                #actionButton("button7", "Oglej si resitev")
+                
+                
+                
               ),
               
               
@@ -223,9 +224,29 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.problem =='6'",
-                p("Ce si obupal mi sporoci.. Tu ti bom pokazal resitev igre."),
-                htmlOutput("resitev")
-                
+                #p("Ce si obupal mi sporoci.. Tu ti bom pokazal resitev igre."),
+                #imageOutput("resitev")
+                conditionalPanel(
+                  condition = "input.nadaljevanje =='3'",
+                  p("To je zacetna igra, ki jo resujes:"),
+                  htmlOutput("zacetna_igra"),
+                  actionButton("button8", "Zacni z igro"),
+                ),
+                conditionalPanel(
+                  condition = "input.nadaljevanje =='1'",
+                  p("To je zacetna igra, ki jo resujes:"),
+                  htmlOutput("matrika_grafa"),
+                  actionButton("button9", "Zacni z igro")
+                ),
+                conditionalPanel(
+                  condition = "input.button9 || input.button8",
+                  p("Kje se nahaja zarnica, ki ji bos spremenil stanje?"),
+                  numericInput("x", "vrstica", value = 0, min=0),
+                  numericInput("y", "stolpec", value = 0, min=0),
+                  p("Ko se odlocis, klikni gumb 'Resi problem', da preveris svojo odlocitev.")
+                ),
+                p("Trenutna stanja zarnic:"),
+                htmlOutput("stanja")
               
               )
               

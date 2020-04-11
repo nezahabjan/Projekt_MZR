@@ -48,7 +48,7 @@ server <- function(input, output) {
     }
   })
   
-  df_react <- reactiveValues(graf=NULL, igra=NULL)
+  df_react <- reactiveValues(graf=NULL, igra=NULL, stanje=NULL, ok=FALSE)
   
   # nato mu narocimo, naj narise graf
   observeEvent( input$button1, {
@@ -206,6 +206,9 @@ server <- function(input, output) {
       })
       
       
+      
+      
+      
     } else if (input$problem == 6){
       observeEvent(input$button6, {
         obstaja <- PUL(df_react$graf$network)$resljivo
@@ -221,6 +224,16 @@ server <- function(input, output) {
       })
       
       observeEvent(input$nadaljevanje, {
+        if (input$nadaljevanje ==1){
+        output$matrika_grafa <- renderGvis({
+          data <- as.data.frame(as.matrix(get.adjacency(df_react$graf$network)), names=TRUE)
+          gvisTable(data)
+        })
+        df_react$stanje <- as.matrix(get.adjacency(df_react$graf$network))
+        
+        } else {
+          output$matrika_grafa <- NULL
+        }
         output$odlocitev <- renderText({
           if (input$nadaljevanje ==1){
             paste("Dobro, potem nadaljujva z igro.")
@@ -231,38 +244,44 @@ server <- function(input, output) {
           }
         })
       })
-
-      observeEvent(input$button7, {
-        output$resitev <- renderGvis({
-          if (input$nadaljevanje == 3){
-            paste("Takole izgleda resitev igre")
-            igra <- as.data.frame(solve_board(df_react$igra)$entries)
-            gvisTable(igra)
-          } else {
-            paste("Takole izgleda resitev igre")
-            igra <- as.data.frame(PUL(df_react$graf$network)$resitev)
-            gvisTable(igra)
-          }
-        })
-      })
       
       observeEvent(input$dimenzija, {
-        if (input$dimenzija > 0){
-      output$zacetna_igra <- renderGvis({
-        df_react$igra <- random_board(input$dimenzija)$entries
-        data <- as.data.frame(df_react$igra)
-        gvisTable(data)
-      })
-        } else {
+        if (input$dimenzija %in% c(3,5,7,9)){
+          df_react$igra <- random_board(input$dimenzija)
+          board_matrix <- df_react$igra$entries
+          df_react$stanje <- board_matrix
           output$zacetna_igra <- renderGvis({
-            df_react$igra <- random_board(1)$entries
-            data <- as.data.frame(df_react$igra)
+            paste("Zacetna igra:")
+            data <- as.data.frame(board_matrix)
             gvisTable(data)
           })
+        } else {
+          output$zacetna_igra <- renderUI({
+            paste("Popravi izbrano vrednost dimenzije!")
+          })
         }
-     })
+      })
+
+      observeEvent(input$button7, {
+        zaigraj <- req(df_react$igra)
+        if (input$nadaljevanje == 3){
+          igra <- as.matrix(solve_board(zaigraj))
+          output$resitev <- renderDataTable(igra)
+        } else {
+          igra <- as.data.frame(PUL(df_react$graf$network)$resitev)
+        }
+        output$resitev <- renderImage(
+          return(list(src=igra,
+              contentType = "image/png"))
+          )
+      })
+      
+
    }
     })
+  
+  
+  
   
   
   
@@ -402,42 +421,27 @@ server <- function(input, output) {
       } else if (input$problem == 6){
         # resujemo problem ugasanja luci
 
-
+        req(df_react$stanje)
+        shinyjs::disable("button4")
+        df_react$ok <- FALSE
+        x <- input$x
+        y <- input$y
+        df_react$ok <- TRUE
+        output$stanja <-renderGvis({
+          if (df_react$ok == TRUE) {
+            shinyjs::enable("button4")
+          data <- as.data.frame(play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje))
+          gvisTable(data)
+          }
+        })
+        
+        df_react$stanje <- play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
 
         }
         
-        
-        
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
  })
     
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   
 }    
