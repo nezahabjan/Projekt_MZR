@@ -161,11 +161,12 @@ body <- dashboardBody(
                 textOutput("odlocitev"),
                 conditionalPanel(
                   condition = "input.nadaljevanje =='3'",
-                  numericInput(inputId = "dimenzija", "Vrednost naj bo liha!", value = 0, min=0)
+                  numericInput(inputId = "dimenzija", "Vrednost naj bo liha!", value =0, min=0),
+                  p("Tu je igra, ki jo resujes:"),
+                  htmlOutput("zacetna_igra"),
                 ),
                 
-                actionButton("button7", "Oglej si resitev"),
-                textOutput("resitev")
+                actionButton("button7", "Oglej si resitev")
               ),
               
               
@@ -222,7 +223,9 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.problem =='6'",
-              #  uiOutput("zacetna_igra")
+                p("Ce si obupal mi sporoci.. Tu ti bom pokazal resitev igre."),
+                htmlOutput("resitev")
+                
               
               )
               

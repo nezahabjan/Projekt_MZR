@@ -375,3 +375,10 @@ play_PUL <- function(g,x,y,board, korak){
 
 
 
+
+
+
+
+
+
+
