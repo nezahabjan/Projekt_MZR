@@ -15,8 +15,8 @@ Projekt temelji na preučevanju glavnih značilnosti grafov in modeliranju probl
 
 
  ## TEORIJA GRAFOV:
-
-![Graf](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA5.png| width=50)
+<img src="https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA1.png" width="100" height="100">
+![Graf](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA1.png| width=50)
 
 #### Splošne definicije:
 **GRAF** je urejen par G=(V,E), kjer je V neprazna množica točk oziroma vozlišč grafa, E pa množica njegovih povezav. Vsaka povezava je množica dveh različnih vozlišč (v1,v2).
