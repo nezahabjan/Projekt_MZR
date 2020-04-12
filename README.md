@@ -35,6 +35,8 @@ V primeru neusmerjenosti pa so grafi ciklični, če obstajajo omenjene sklenjene
 
 * **Najkrajša razdalja v grafu**: ali polmer/radij, je najkrajša med vsemi najdaljšimi razdaljami vsakih dveh vozlišč v grafu. Torej min(max(d(v,u)).
 
+![diameter in radij grafa](https://www.google.com/search?sxsrf=ALeKk00DM9KQ04UuMipbhMY87xTbZrbd7Q:1586679748959&q=graph+diameter&tbm=isch&source=univ&sa=X&ved=2ahUKEwiA_LvWuuLoAhXJ4KYKHXDJCvIQsAR6BAgJEAE&biw=1396&bih=657#imgrc=6_cnyJoovFXrQM)
+
 * **Dvodelnost**: graf je dvodelen, če lahko njegova vozlišča pobarvamo z dvema barvama (črna in bela) tako, da ima vsaka povezava raznobarvni krajišči. Velja izrek, da je graf dvodelen natanko takrat, ko ne vsebuje nobenega cikla lihe dolžine.
 
 * **Polnost**: graf je poln, če vsebuje vse možne povezave med točkami, oziroma če je vsako od vozlišč grafa povezano z vsemi ostalimi.
