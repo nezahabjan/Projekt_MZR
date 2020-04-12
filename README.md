@@ -16,7 +16,7 @@ Projekt temelji na preučevanju glavnih značilnosti grafov in modeliranju probl
 
  ## TEORIJA GRAFOV:
 
-![Graf](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA5.png?raw=true)
+![Graf](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA5.png| width=50)
 
 #### Splošne definicije:
 **GRAF** je urejen par G=(V,E), kjer je V neprazna množica točk oziroma vozlišč grafa, E pa množica njegovih povezav. Vsaka povezava je množica dveh različnih vozlišč (v1,v2).
@@ -37,15 +37,15 @@ V primeru neusmerjenosti pa so grafi ciklični, če obstajajo omenjene sklenjene
 
 * **Najkrajša razdalja v grafu**: ali polmer/radij, je najkrajša med vsemi najdaljšimi razdaljami vsakih dveh vozlišč v grafu. Torej min(max(d(v,u)).
 
-![Diameter in radij grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA1.png?raw=true)
+![Diameter in radij grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA1.png| width=50)
 
 * **Dvodelnost**: graf je dvodelen, če lahko njegova vozlišča pobarvamo z dvema barvama (črna in bela) tako, da ima vsaka povezava raznobarvni krajišči. Velja izrek, da je graf dvodelen natanko takrat, ko ne vsebuje nobenega cikla lihe dolžine.
 
-![Prikaz dvodelnega grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA2.png?raw=true)
+![Prikaz dvodelnega grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA2.png | width=50)
 
 * **Polnost**: graf je poln, če vsebuje vse možne povezave med točkami, oziroma če je vsako od vozlišč grafa povezano z vsemi ostalimi.
 
-![Prikaz polnega grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA3.png?raw=true)
+![Prikaz polnega grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA3.png| width=50)
 
 * **Uteženost**: Graf je utežen, če vsaki od povezav dodamo tudi cene prehoda po njih, ki jih nato na primer uporabljamo pri reševanju problemov kot je TSP. Cene prikažemo s kvadratno cenovno matriko, predstavljajo pa lahko porabljen čas med posameznima vozliščema, denarni strošek potovanja, obrabo vozila,...
 
@@ -54,7 +54,7 @@ V primeru neusmerjenosti pa so grafi ciklični, če obstajajo omenjene sklenjene
 *	**PROBLEM TRGOVSKEGA POTNIKA**: je problem, kjer vozlišča grafa predstavljajo mesta, povezave pa ceste med njimi. Trgovski potnik mora v enem obhodu obiti vsa mesta z najkrajšo možno potjo/najmanjšimi možnimi stroški in se na koncu vrniti na začetno mesto, pri tem pa lahko vsako mesto obišče le enkrat. Povezavam grafa tako moramo dodati cene, ki odločajo o optimalnosti obhoda. Cene shranimo v cenovno matriko (n x n), ki prikazuje cene potovanj med posameznima dvema mestoma. Problem rešujemo na polnem neusmerjenem grafu, in sicer na vsaki točki izberemo najcenejšo pot iz nje. V primeru usmerjenosti privzamemo, da so povezave v eno smer enako drage kot v drugo, obstajajo pa vse, zato lahko problem rešujemo kot pri neusmerjenem grafu. Če prvotni graf, na katerem rešujemo problem ni poln, mu dodamo manjkajoče povezave, ki jih ovrednotimo z zelo visokimi cenami, tako da pri končni rešitvi ne bodo imele vloge, oziroma je obstoj iskane poti takoj razviden iz njene cene.
 *	**RAVNINSKOST GRAFA**: ravninski graf je v teoriji grafov graf, ki se ga lahko vloži v ravnino na način, da se nobeni dve povezavi med seboj ne sekata in ima vsak par povezav skupno točko le v krajiščih grafa. Pri ugotavljanju ravninskosti se vsak graf prevede na neusmerjenega oziroma se podatek o usmerjenosti zanemari, saj za rezultat ni pomemben.
 
-![Prikaz ravninskosti grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA4.png?raw=true)
+![Prikaz ravninskosti grafa](https://github.com/nezahabjan/Projekt_MZR/blob/master/slikovno%20gradivo/SLIKA4.png| width=50)
 
 *	**BARVANJE GRAFA**: pravimo, da je graf k-obarvljiv, v primeru da obstaja preslikava *c : V (G) → {1, . . . , k}*, da je *c(u) != c(v)* za poljubni sosednji točki 'u' in 'v' grafa G. Z drugimi besedami, vsakemu od krajišč grafa priredimo eno od barv tako, da nobeni dve sosednji krajišči nista enako obarvani. Najmanjšemu številu barv, ki jih pri tem porabimo, pravimo *kromatično število grafa*. Pri naši aplikaciji bomo iskali ravno to vrednost. Velja več izrekov, ki povezujejo ravninskost in kromatično število, in sicer je vsak ravninski graf 4-obarvljiv, vsak ravninski graf brez trikotnikov (ciklov dolžine 3) pa 3 obarvljiv.
 *	**NAJKRAJŠA POT MED IZBRANIMA VOZLIŠČEMA**: Pot je v teoriji grafov zaporedje vozlišč grafa, pri katerih med vsakima zaporednima obstaja povezava iz prvega v drugega, v celotni poti pa se posamezno vozlišče pojavi le enkrat. Pri reševanju tega problema iščemo torej najkrajšo pot med dvema izbranima vozliščema, pri čemer lahko povezavam v grafu dodamo uteži in tako problem prevedemo na iskanje *najcenejše* povezave med dvema vozliščema.
