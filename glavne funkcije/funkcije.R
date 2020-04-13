@@ -381,14 +381,51 @@ play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
 #raziskujemo, ali je graf Eulerjev ali ne (ali vsebuje Eulerjev obhod)
 #ali je graf poleulerjev? (ali vsebuje Eulerjev sprehod)
 #s koliko najmanj potezami lahko graf narišemo?
-Euler <- function(g, start){
-  graph <- 
-  eulerian(graph, start = NULL)
+Euler <- function(g, v1){
+  start <- as.character(v1)
+  graph <- as_graphnel(g)
+  min_st_potez <- 0
+  
+  #najprej preverimo obstoj obhoda ali vsaj poti
+  if (hasEulerianCycle(graph)==TRUE){
+    cikel <- eulerian(graph, start)
+    min_st_potez <- 1
+  } else {
+    cikel <- 0
+    if (hasEulerianPath(graph, start)==TRUE){
+      pot <- eulerian(graph, start)
+      min_st_potez <- 1
+    } else {
+      pot <- 0
+    }
+  }
+  
+  #sedaj poišèimo najmanjše število potez za risanje grafa
+  if (min_st_potez ==0){
+    min_st_potez <- stej_liho(degree(g))/2
+  }
+
+  return(list("cikel"=cikel, "pot"=pot, "min_st_potez"=min_st_potez))
 }
+#pomozna funkcija za stetje lihih vozlisc grafa
+stej_liho <- function(x) { 
+  k <- 0 
+  for (n in x) {
+    if (n %% 2 == 1){
+      k <- k+1
+    }
+  }
+  return(k)
+} 
 
 
 
-
+# h) Graficnost zaporedja
+#ali je zaporedje graficno ali ne? (podamo zaporedje stopenj vozlisc)
+graficnost <- function(vhodne, izhodne){
+    obstaja <- is_graphical(vhodne, izhodne)
+    return(obstaja)
+}
 
 
 
