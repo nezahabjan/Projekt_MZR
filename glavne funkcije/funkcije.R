@@ -36,7 +36,6 @@ narisi_poln <- function(n, dir){
   
   return(list("network"=network, "matrika"=matrika))
 }
-
 #b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo še atribut usmerjenosti
 # diagonalo tudi upoštevamo, glede na to da je izbor naš
 narisi_pripravljen <- function(adj_matrika, directed){
@@ -156,7 +155,6 @@ poisci_cikle <- function(g){
   
   return(rezultat)
 }
-
 
 
 # F) funkcija vrne najdaljso pot v grafu
@@ -379,8 +377,14 @@ play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
 
 
 
-
-
+# g) Eulerjev graf
+#raziskujemo, ali je graf Eulerjev ali ne (ali vsebuje Eulerjev obhod)
+#ali je graf poleulerjev? (ali vsebuje Eulerjev sprehod)
+#s koliko najmanj potezami lahko graf narišemo?
+Euler <- function(g, start){
+  graph <- 
+  eulerian(graph, start = NULL)
+}
 
 
 
