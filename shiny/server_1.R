@@ -48,7 +48,7 @@ server <- function(input, output) {
     }
   })
   
-  df_react <- reactiveValues(graf=NULL, igra=NULL, stanje=NULL, ok=FALSE)
+  df_react <- reactiveValues(graf=NULL, nov_graf=NULL, igra=NULL, stanje=NULL, ok=FALSE)
   
   # nato mu narocimo, naj narise graf
   observeEvent( input$button1, {
@@ -85,10 +85,20 @@ server <- function(input, output) {
   
   
   ### ZAVIHEK LASTNOSTI ###
+  observeEvent(input$posodobi1,{
+    shinyjs::disable("posodobi1")
+    if (nov_graf){
+      df_react$graf = df_react$nov_graf
+    }
+    shinyjs::enable("posodobi1")
+  })
+  
+  
+  
   
   observeEvent( input$button3, {
-    
     req(df_react$graf)
+    
     
     if (input$characteristic == 1){
       output$poizvedba <- renderText({
@@ -163,11 +173,6 @@ server <- function(input, output) {
       output$text_4 <- renderText({
         paste(komp)
       })
-      
-      
-      
-      
-      
     }
     
     
@@ -176,8 +181,19 @@ server <- function(input, output) {
   
   
   ### ZAVIHEK PROBLEMI ###
+  observeEvent(input$posodobi2,{
+    shinyjs::disable("posodobi2")
+    if (nov_graf){
+      df_react$graf = df_react$nov_graf
+    }
+    shinyjs::enable("posodobi2")
+  })
+  
+  
+
   
   observeEvent(input$problem,{
+    # vzamemo graf, ki je trenutno v uporabi
     req(df_react$graf)
     
     
@@ -192,12 +208,16 @@ server <- function(input, output) {
        })
       
       
+      
+      
     } else if (input$problem == 4){
       output$edges_2 <- renderGvis({
         data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
         gvisTable(data)
       })
     
+      
+      
       
     } else if (input$problem == 5){
       output$edges_3 <- renderGvis({
@@ -275,16 +295,13 @@ server <- function(input, output) {
               contentType = "image/png"))
           )
       })
-      
-
-   }
+    }
     })
   
   
   
   
-  
-  
+
   
   observeEvent(input$button4, {
       #vzamemo graf, ki je trenutno v uporabi
@@ -437,13 +454,127 @@ server <- function(input, output) {
         
         df_react$stanje <- play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
 
-        }
+        
+        
+      
+        
+      } else if (input$problem == 7){
+        # resujemo problem ugotavljanja graficnosti problema
+        
+          if (input$graficnost ==1){
+            vhodne <- as.numeric(unlist(strsplit(input$in_stopnje, ",")))
+            izhodne <- as.numeric(unlist(strsplit(input$out_stopnje, ",")))
+            rezultat <- graficnost(izhodne, vhodne)
+            if (length(izhodne) != length(vhodne)){
+              output$preveri_stopnje <- renderText({
+                "Ponovno preveri vnos stopenj. Stevilo vhodnih mora biti enako stevilu izhodnih, saj moras vsakemu vozliscu grafa podati tako vhodno kot tudi izhodno stopnjo."
+              })
+            } else {
+              output$preveri_stopnje <- renderText({
+                "Super, stopnje si vnesel pravilno!"
+              })
+            }
+          } else if (input$graficnost ==2){
+            stopnje <- as.numeric(unlist(strsplit(input$stopnje, ",")))
+            rezultat <- graficnost(stopnje, NULL)
+          }
+        if (rezultat$obstaja == TRUE){
+          output$graf_zaporedje <- renderText({
+             "Iz danih stopenj vozlisc bi lahko sestavil graf. Tu je primer:"
+          })
+          output$graf_iz_zaporedja <- renderPlot(
+            plot(rezultat$primer)
+          )
+          } else {
+          output$graf_zaporedje <- renderText({      
+             "Graf z danimi stopnjami vozlisc ne obstaja."
+          })
+          output$graf_iz_zaporedja <- NULL
+          }
+        
+        
         
 
- })
-    
-  
-  
+      }  else if (input$problem == 8){
+        # resujemo problem iskanja eulerjevega cikla, sprehoda ali stevila povezav za risanje
+        
+        
+        shinyjs::disable("button4")
+        df_react$ok <- FALSE
+        if (input$Eu_start != "0"){
+          cikel <- Euler(df_react$graf$network, input$Eu_start)$cikel
+          komentar_pot <-  Euler(df_react$graf$network, input$Eu_start)$komentar_pot
+          komentar_cikel <-  Euler(df_react$graf$network, input$Eu_start)$komentar_cikel
+          pot <- Euler(df_react$graf$network, input$Eu_start)$pot
+          poteze <- Euler(df_react$graf$network, input$Eu_start)$min_st_potez
+          if (input$Euler_izbor == 2){
+            rezultat <- paste(pot)
+            komentar <- paste(komentar_pot)
+          }
+          else if (input$Euler_izbor == 1){
+            rezultat <- paste(cikel)
+            komentar <- paste(komentar_cikel)
+          } else if (input$Euler_izbor == 3){
+            rezultat <- NULL
+            komentar <- paste("Minimalno stevilo potez, s katerimi bos narisal svoj graf je", poteze)
+          }
+          df_react$ok <- TRUE
+        }
+
+        output$komentiraj <-renderText({
+          if (df_react$ok == TRUE) {
+            shinyjs::enable("button4")
+            paste(komentar)
+          }
+        })
+        output$rezultat <-renderText({
+          if (df_react$ok == TRUE) {
+            shinyjs::enable("button4")
+            paste(rezultat)
+          }
+        })
+        
+        
+        
+        
+        
+      } else if (input$problem == 9){
+        # resujemo problem iskanja povezavnega grafa
+        
+        shinyjs::disable("button4")
+        output$povezavni <- renderPlot(
+          plot(povezavni(df_react$graf$network)$network)
+        )
+        shinyjs::enable("button4")
+        observeEvent(input$shrani1,{
+          shinyjs::disable("shrani1")
+          df_react$ok <- FALSE
+          df_react$nov_graf <- povezavni(df_react$graf$network)
+          df_react$ok <- TRUE
+          shinyjs::enable("shrani1")
+        })
+        
+        
+        
+        
+      } else if (input$problem == 10){
+        # resujemo problem iskanja komplementarnega grafa
+        
+        shinyjs::disable("button4")
+        output$komplementaren <- renderPlot(
+          plot(komplement(df_react$graf$network)$network)
+        )
+        shinyjs::enable("button4")
+        observeEvent(input$shrani2,{
+          shinyjs::disable("shrani2")
+          df_react$ok <- FALSE
+          df_react$nov_graf <- komplement(df_react$graf$network)
+          df_react$ok <- TRUE
+          shinyjs::enable("shrani2")
+        })
+      }
+          })
+
 }    
 
 

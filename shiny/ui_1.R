@@ -69,6 +69,9 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
+              p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
+              
+              actionButton("posodobi1", "Posodobi"),
               
               radioButtons("characteristic", 
                            h3("Izberi karakteristike, ki te zanimajo"),
@@ -101,6 +104,8 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("Bi rad na svojem grafu modeliral kaksen problem?"),
+              p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
+              actionButton("posodobi2", "Posodobi"),
               
               selectInput("problem", "Katerega od problemov se bos lotil?",
                           choices = list("Problem trgovskega potnika" = 1,
@@ -108,7 +113,11 @@ body <- dashboardBody(
                                          "Ravninskost grafa"=3,
                                          "Iskanje najcenejse poti"=4,
                                          "Problem minimalne elektricne napeljave"=5,
-                                         "Problem ugasanja luci" = 6), selected = 3),
+                                         "Problem ugasanja luci" = 6,
+                                         "Graficnost zaporedja" = 7,
+                                         "Eulerjeva lastnost" = 8,
+                                         "Ustvari povezavni graf" = 9,
+                                         "Ustvari komplementaren graf" = 10), selected = 3),
               
               conditionalPanel(
                 condition = "input.problem =='1'",
@@ -165,16 +174,47 @@ body <- dashboardBody(
                 )
                 
                 #actionButton("button7", "Oglej si resitev")
-                
-                
-                
               ),
               
+              conditionalPanel(
+                condition = "input.problem =='7'",
+                p("Preveril bi rad graficnost poljubnega zaporedja stopenj vozlisc. Najprej doloci, ali preverjas graficnost za usmerjen ali neusmerjen graf."),
+                selectInput("graficnost", "Izberi usmerjenost potencialnega grafa!",choices = c("usmerjen"=1,
+                                                      "neusmerjen"=2,
+                                                      "/"=3), selected =3),
+                conditionalPanel(
+                  condition= "input.graficnost == 1",
+                  textInput("in_stopnje", "Vnesi zaporedje vhodnih stopenj, locenih z vejico.", value=""),
+                  textInput("out_stopnje", "Vnesi zaporedje izhodnih stopenj, locenih z vejico.", value=""),
+                  textOutput("preveri_stopnje")
+                    ),
+                conditionalPanel(
+                  condition= "input.graficnost == 2",
+                  textInput("stopnje", "Vnesi zaporedje stopenj, locenih z vejico.", value="")
+                )
+              ),
               
+              conditionalPanel(
+                condition = "input.problem =='8'",
+                p("Preveril bi rad obstoj Eulerjevega cikla in Eulerjevega sprehoda v tvojem grafu? Povem ti lahko tudi, koliko truda moras vloziti da svoj graf narises..."),
+                selectInput("Euler_izbor", "Izberi, kaj zelis da ti podam!",choices = c("Eulerjev cikel"=1,
+                                                                                      "Eulerjev sprehod"=2,
+                                                                                      "Min stevilo potez"=3,
+                                                                                      "/"=4), selected =4),
+                p("Vnesi stevilko vozlisca, kjer naj zacnem z iskanjem sprehoda/cikla."),
+                textInput("Eu_start", "Izberi zacetno vozlisce.", value = "0")
+                ),
               
+              conditionalPanel(
+                condition = "input.problem =='9'",
+                p("Bi rad videl kakšen je pripadajoč povezavni graf tvojega grafa?")
+              ),
               
-              
-              
+              conditionalPanel(
+                condition = "input.problem =='10'",
+                p("Bi rad videl kakšen je pripadajoč komplementaren graf tvojega grafa?")
+              ),
+
               actionButton("button4", "Resi problem"),
               
               conditionalPanel(
@@ -183,9 +223,10 @@ body <- dashboardBody(
                 numericInput(inputId = "pojav", "Vnesi stevilko vozlisca, katerega uporabnost te zanima.", value = 0),
                 actionButton("button5", "Preveri pogostost")
                )
-              
-              
             ),
+            
+            
+            
             
             mainPanel(
               
@@ -247,7 +288,32 @@ body <- dashboardBody(
                 ),
                 p("Trenutna stanja zarnic:"),
                 htmlOutput("stanja")
+              ),
               
+              conditionalPanel(
+                condition = "input.problem =='7'",
+                textOutput("graf_zaporedje"),
+                plotOutput("graf_iz_zaporedja")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='8'",
+                textOutput("komentiraj"),
+                textOutput("rezultat")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='9'",
+                plotOutput("povezavni"),
+                p("Bi rad shranil povezavni graf za raziskovanje naprej?"),
+                actionButton("shrani1", "Shrani")
+              ),
+              
+              conditionalPanel(
+                condition = "input.problem =='10'",
+                plotOutput("komplementaren"),
+                p("Bi rad shranil komplementaren graf za raziskovanje naprej?"),
+                actionButton("shrani2", "Shrani")
               )
               
               

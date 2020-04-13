@@ -177,13 +177,6 @@ komponente <- function(graf){
 }
 
 
-# H) funkcija izrise graf, ki je komplementaren izbranemu grafu
-komplement <- function(graf){
-  kompl <- complementer(graf$network)
-  plot(kompl)
-}
-
-
 # I) funkcija, ki vrne najkrajso razdaljo med dvema najbolj oddaljenima tockama grafa
 najkrajsa_razdalja <- function(graf){
   razdalja <- radius(graf)
@@ -297,17 +290,28 @@ return(list("planar" = planar))
 
 # d) najkrajsa pot med izbranima vozliscema
 #funkcija vrne seznam najkrajsih poti in dolzino najkrajse
-najdi_najkrajso_pot <- function(g, iz, v, vect_utezi){
+najdi_min_pot <- function(g, iz, v, vect_utezi){
+  g <- set_edge_attr(g, "weight",E(g), vect_utezi)
+  stevilo_min_poti <- suppressWarnings(length(all_shortest_paths(g, iz, v, weights=vect_utezi)$res))
+  stevilo_enostavnih_poti <- length(all_simple_paths(g, iz, v))
   
-  stevilo_vseh_poti <- suppressWarnings(length(all_shortest_paths(g, iz, v, weights=vect_utezi)$res))
-  if (stevilo_vseh_poti == 0){
-    vse_poti <- list()
+  
+  if (stevilo_enostavnih_poti == 0){
+    min_poti <- list()
+    min_dolzina <- 0
+    #max_dolzina <- 0
+    #max_primeri <- 0
+    min_primeri <- 0
   } else {
-    vse_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)$res
+    min_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)$res
+    enostavne_poti <- all_simple_paths(g, iz, v)
+    min_dolzina <- min(distances(g, iz, v, weights = g$weight))
+    min_primeri <- min_poti[which(sapply(min_poti, function(x) {distances(g, iz, v)}) < (min_dolzina+1))]
+    #max_primeri <- enostavne_poti[which(sapply(enostavne_poti, length) > (max_dolzina-1))]
   }
-  dolzina <- min(distances(g, iz, v, weights = vect_utezi))
+
   
-  return(list("dolzina"=dolzina, "poti"=vse_poti))
+  return(list("min_dolzina"=min_dolzina, "min_primeri"=min_primeri))
 
 }
 #funkcija nam vrne stevilo pojavov vozlisca v1 na vseh najkrajsih poteh med izbranima vozliscema
@@ -382,30 +386,37 @@ play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
 #ali je graf poleulerjev? (ali vsebuje Eulerjev sprehod)
 #s koliko najmanj potezami lahko graf narišemo?
 Euler <- function(g, v1){
-  start <- as.character(v1)
   graph <- as_graphnel(g)
   min_st_potez <- 0
-  
+  komentar <- ""
+  pot <- v1
+  cikel <- NULL
   #najprej preverimo obstoj obhoda ali vsaj poti
   if (hasEulerianCycle(graph)==TRUE){
-    cikel <- eulerian(graph, start)
+    cikel <- eulerian(graph, v1)
     min_st_potez <- 1
-  } else {
-    cikel <- 0
-    if (hasEulerianPath(graph, start)==TRUE){
-      pot <- eulerian(graph, start)
-      min_st_potez <- 1
-    } else {
-      pot <- 0
+    komentar_cikel <- "Graf je Eulerjev, tu je cikel:"
+   } else {
+    cikel <- NULL
+    komentar_cikel <- "Tvoj graf ni Eulerjev."
     }
-  }
+  
+  if (hasEulerianPath(graph, v1)==TRUE){
+      pot <- eulerian(graph, v1)
+      min_st_potez <- 1
+      komentar_pot <- "Graf je Poleulerjev, tu je Eulerjev sprehod."
+    } else {
+      pot <- NULL
+      komentar_pot <- "Tvoj graf nima niti Eulerjevega cikla niti sprehoda z izbranim zacetkom."
+    }
+  
   
   #sedaj poišèimo najmanjše število potez za risanje grafa
   if (min_st_potez ==0){
     min_st_potez <- stej_liho(degree(g))/2
   }
 
-  return(list("cikel"=cikel, "pot"=pot, "min_st_potez"=min_st_potez))
+  return(list("cikel"=cikel, "pot"=pot, "min_st_potez"=min_st_potez, "komentar_cikel" = komentar_cikel, "komentar_pot"=komentar_pot))
 }
 #pomozna funkcija za stetje lihih vozlisc grafa
 stej_liho <- function(x) { 
@@ -422,11 +433,34 @@ stej_liho <- function(x) {
 
 # h) Graficnost zaporedja
 #ali je zaporedje graficno ali ne? (podamo zaporedje stopenj vozlisc)
-graficnost <- function(vhodne, izhodne){
-    obstaja <- is_graphical(vhodne, izhodne)
-    return(obstaja)
+#funkcija poda nakljucen graf, ki uposteva dane stopnje
+graficnost <- function(izhodne, vhodne){
+    obstaja <- is_graphical(izhodne, vhodne)
+    if (obstaja ==TRUE){
+      primer <- sample_degseq(izhodne, vhodne)
+    } else {
+      primer <- 0
+    }
+    return(list("obstaja"=obstaja, "primer"=primer))
 }
 
 
 
+# i) ustvari povezavni graf
+#funkcija poda in izrise povezavni graf nasega osnovnega grafa
+povezavni <- function(g){
+  line_graph <- make_line_graph(g)
+  network <- line_graph
+  return(list("line_graph"=line_graph, "network"=network))
+}
+
+
+
+# j) ustvari komplementaren graf
+#funkcija poda in izrise komplementaren graf nasega osnovnega
+komplement <- function(g){
+  kompl <- complementer(g)
+  network <- kompl
+  return(list("kompl"=kompl, "network"=network))
+}
 
