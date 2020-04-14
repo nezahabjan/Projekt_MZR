@@ -12,15 +12,14 @@ body <- dashboardBody(
               h3("Dobrodosel v svetu grafov!"),
               
               selectInput("generate", "Naj ti graf generiram jaz, ali imas ze izbranega? ",
-                          choices = list("generiraj" = 1, "imam_svoj_graf"=2, "/"=3), selected = 3),
-              
+                          choices = list("generiraj" = 1,
+                                         "imam_svoj_graf"=2,
+                                         "/"=3), selected = 3),
               textOutput("text_2"),
-              
               conditionalPanel(
                 condition = "input.generate == '1'",
                 selectInput(inputId = "polnost", "Naj bo graf poln?",
                             choices = list("DA" = 1, "NE" = 2, "/"=3), selected = 3),
-                
                 conditionalPanel(condition = "input.polnost == '1'",
                                  numericInput(inputId = "vozl_1",
                                               label = "Izberi stevilo vozlisc grafa",
@@ -39,25 +38,22 @@ body <- dashboardBody(
                 numericInput(inputId = "vozl_3",
                              label = "Izberi stevilo vozlisc grafa",
                              value = 0 ),
-                
-                actionButton("button2", "Vnesi elemente povezavne matrike"),
-                
+                actionButton("button2", "Vnesi"),
                 textOutput("text_3"),
                 uiOutput("vnos")
                 
               ),
               
-
               selectInput("dir", "Izberi se usmerjenost grafa",
-                          choices = list("Graf ni usmerjen" = 1, "Graf je usmerjen" = 2, "nevem" = 3), selected = 3),
-              
+                          choices = list("Graf ni usmerjen" = 1,
+                                         "Graf je usmerjen" = 2,
+                                         "nevem" = 3), selected = 3),
               textOutput("text_1"),
-
               actionButton("button1", "Narisi")
-              
             ),
             
             mainPanel( 
+              p("SLIKA GRAFA:"),
               tabPanel("Graf", plotOutput("graf"))
             ))),
     
@@ -69,9 +65,8 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
-              p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
-              
-              actionButton("posodobi1", "Posodobi"),
+              #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
+              #actionButton("posodobi1", "Posodobi"),
               
               radioButtons("characteristic", 
                            h3("Izberi karakteristike, ki te zanimajo"),
@@ -89,11 +84,27 @@ body <- dashboardBody(
             
             mainPanel(
               textOutput("text_4"),
-              textOutput("ciklicnost"),
-              tabPanel("Poizvedba", uiOutput("poizvedba"))
+              conditionalPanel(
+                condition = "input.characteristic == '1'",
+                textOutput("poizvedba_st")
+              ),
+              conditionalPanel(
+                condition = "input.characteristic == '2'",
+                textOutput("ciklicnost")
+              ),
+              conditionalPanel(
+                condition = "input.characteristic == '4'",
+                plotOutput("poizvedba_dvo")
+              ),
+              conditionalPanel(
+                condition = "input.characteristic == '7'",
+                plotOutput("poizvedba_komp")
+              ),
+              conditionalPanel(
+                condition = "input.characteristic == '3' | input.characteristic == '5' | input.characteristic == '6'",
+                tabPanel("Poizvedba", uiOutput("poizvedba"))
+              )
 
-              
-              
             )
             )),
     
@@ -104,8 +115,8 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("Bi rad na svojem grafu modeliral kaksen problem?"),
-              p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
-              actionButton("posodobi2", "Posodobi"),
+              #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
+              #actionButton("posodobi2", "Posodobi"),
               
               selectInput("problem", "Katerega od problemov se bos lotil?",
                           choices = list("Problem trgovskega potnika" = 1,
@@ -123,7 +134,7 @@ body <- dashboardBody(
                 condition = "input.problem =='1'",
                 p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi. Te lahko predstavljajo ceno voznje, porabljen cas, energijo, kolicino nafte,..."),
                 textOutput("text_5"),
-                htmlOutput("edges_1"),
+                htmlOutput("povezave_1"),
                 textInput("utezi_1", "Vsaka povezava v povezavni matriki naj dobi svojo utez!", value=""),
                 textOutput("text_6"),
                 numericInput("start", "Vnesi vozlisce, kjer naj trgovski potnik zacne s potjo!", value=0, min=0),
@@ -146,15 +157,15 @@ body <- dashboardBody(
                 numericInput(inputId = "zacni", "Vnesi stevilko vozlisca, ki naj bo zacetek poti.", value = 0, min=0),
                 numericInput(inputId = "finish", "Vnesi stevilko vozlisca, ki naj bo konec poti.", value = 0, min=0),
                 p("Sedaj pa povezavam v grafu doloci cene. Vsaka povezava iz spodnjega seznama naj dobi svojo vrednost! Ce cen ne zelis prosim vpisi besedico 'NULL'"),
-                htmlOutput("edges_2"),
-                textInput("utezi_2", "Vnesi vrednosti.", value="")
+                htmlOutput("povezave_2"),
+                textInput("utezi_2", "Vnesi celostevilske vrednosti, locene z vejico.", value="")
                 ),
               
               conditionalPanel(
                 condition = "input.problem =='5'",
                 p("Lotil si se resevanja problema minimalne elektricne napeljave po mestih. Potreboval bom utezi na posameznih povezavah grafa."),
                 htmlOutput("edges_3"),
-                textInput("utezi_3", "Vnesi vrednosti.", value="")
+                textInput("utezi_3", "Vnesi celostevilske vrednosti, locene z vejico.", value="")
               ),
               
               conditionalPanel(
@@ -207,22 +218,15 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.problem =='9'",
-                p("Bi rad videl kakšen je pripadajoč povezavni graf tvojega grafa?")
+                p("Bi rad videl kaksen je pripadajoc povezavni graf tvojega grafa?")
               ),
               
               conditionalPanel(
                 condition = "input.problem =='10'",
-                p("Bi rad videl kakšen je pripadajoč komplementaren graf tvojega grafa?")
+                p("Bi rad videl kaksen je pripadajoc komplementaren graf tvojega grafa?")
               ),
 
-              actionButton("button4", "Resi problem"),
-              
-              conditionalPanel(
-                condition = "input.problem =='4'",
-                p("Preveris lahko tudi, kolikokrat se med najkrajsimi potmi pojavi izbrano vozlisce"),
-                numericInput(inputId = "pojav", "Vnesi stevilko vozlisca, katerega uporabnost te zanima.", value = 0),
-                actionButton("button5", "Preveri pogostost")
-               )
+              actionButton("button4", "Resi problem")
             ),
             
             
@@ -253,8 +257,8 @@ body <- dashboardBody(
               conditionalPanel(
                 condition = "input.problem =='4'",
                 textOutput("najceneje"),
-                textOutput("poti"),
-                textOutput("pogostost")
+                plotOutput("minimum_poti")
+                #textOutput("pogostost")
               ),
               
               conditionalPanel(

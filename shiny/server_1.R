@@ -9,7 +9,7 @@ server <- function(input, output) {
   observeEvent( input$generate, {
     
     if (input$generate == 1){
-      output$text_2 <- renderText({ "Super, podati mi moras zeljeno stevilo vozlisc in povezav. Lahko si izbereš tudi poln graf." })
+      output$text_2 <- renderText({ "Super, podati mi moras zeljeno stevilo vozlisc in povezav. Lahko si izberes tudi poln graf." })
     } else if (input$generate == 2){
       output$text_2 <- renderText({ "Torej moras vnesti se povezavno matriko svojega grafa." })
     } else {
@@ -38,7 +38,7 @@ server <- function(input, output) {
       
       output$vnos <- renderUI({
         lapply((1:input$vozl_3), function(i) {
-          textInput(paste0("v",i), paste0("v",i), paste("0,0,1,... vnesi",input$vozl_3,"cifer"))})
+          textInput(paste0("v",i), paste0("v",i), paste("0,0,1,... vnesi",input$vozl_3,"nicel ali enic"))})
       })
       
     } else {
@@ -56,13 +56,11 @@ server <- function(input, output) {
     if (input$generate == 1){
       if (input$polnost == 1){
         output$graf <- renderPlot({
-          
           df_react$graf = narisi_poln(input$vozl_1, input$dir)
           plot.igraph(df_react$graf$network)
         })
       } else if (input$polnost == 2){
         output$graf <- renderPlot({
-          
           df_react$graf = narisi_izbor(input$vozl_2, input$povez, input$dir)
           plot.igraph(df_react$graf$network)
         })
@@ -74,10 +72,8 @@ server <- function(input, output) {
         unlist(strsplit(input[[paste0("v",i)]], ","))))), input$vozl_3, input$vozl_3, byrow=TRUE)
       
       output$graf <- renderPlot({
-        
         df_react$graf = narisi_pripravljen(matrika, input$dir)
         plot.igraph(df_react$graf$network)
-        
       })
     }
   })
@@ -85,25 +81,24 @@ server <- function(input, output) {
   
   
   ### ZAVIHEK LASTNOSTI ###
-  observeEvent(input$posodobi1,{
-    shinyjs::disable("posodobi1")
-    if (nov_graf){
-      df_react$graf = df_react$nov_graf
-    }
-    shinyjs::enable("posodobi1")
-  })
+  #observeEvent(input$posodobi1,{
+  #  shinyjs::disable("posodobi1")
+  #  if (df_react$nov_graf != NULL){
+  #    df_react$graf = df_react$nov_graf
+  #  }
+  #  shinyjs::enable("posodobi1")
+  #})
   
   
   
   
   observeEvent( input$button3, {
-    req(df_react$graf)
-    
+    df_react$graf <- current_graph()
+    #req(df_react$graf)
     
     if (input$characteristic == 1){
-      output$poizvedba <- renderText({
+      output$poizvedba_st <- renderText({
         seznam_stopenj <- stopnje(df_react$graf$network)
-        #paste(seznam_stopenj)
         paste(names(seznam_stopenj), seznam_stopenj)
       })
       output$text_4 <- renderText({
@@ -113,12 +108,16 @@ server <- function(input, output) {
     } else if (input$characteristic == 2){
       output$ciklicnost <- renderText({
         cikli <- poisci_cikle(df_react$graf$network)
+        if (length(cikli) == 0){
+          paste("Seznam je prazen.. Tvoj graf nima nobenega cikla.")
+        } else {
         paste(cikli)
-          })
+         }
+        })
       
       if (is_directed(df_react$graf$network)=="TRUE" & DAG(df_react$graf$network) == "TRUE"){
         output$text_4 <- renderText({
-          "Tvoj graf je acikličen in usmerjen!"
+          "Tvoj graf je aciklicen in usmerjen!"
            })
       } else {
         output$text_4 <- renderText({
@@ -126,12 +125,14 @@ server <- function(input, output) {
         })
         }
       
+      
       } else if (input$characteristic == 3){
       stevilo_povezav <- povezave(df_react$graf$network)
       output$text_4 <- renderText({
         paste("Tvoj graf ima", stevilo_povezav, "povezav.")
       })
       output$poizvedba <- NULL
+      
       
     } else if (input$characteristic == 5){
       
@@ -141,6 +142,7 @@ server <- function(input, output) {
       })
       output$poizvedba <- NULL
       
+      
     } else if (input$characteristic == 6){
       
       radij <- najkrajsa_razdalja(df_react$graf$network)
@@ -149,29 +151,37 @@ server <- function(input, output) {
       })
       output$poizvedba <- NULL
       
+      
     } else if (input$characteristic == 4){
-      bipartite <- dvodelen(df_react$graf$network)
+      bipartite <- dvodelen(df_react$graf$network)$dvo
+      postavitev <- dvodelen(df_react$graf$network)$logical
       
       if (bipartite == TRUE){
         output$text_4 <- renderText({
-          "Tvoj graf je dvodelen!"
+          "Tvoj graf je dvodelen! Prepricaj se s spodnjim prikazom."
         })
-        output$poizvedba <- NULL
+        output$poizvedba_dvo <- renderPlot({
+          graf <- df_react$graf$network
+          plot(graf, layout=layout_as_bipartite(graf, types=postavitev))
+        })
         
       } else {
         output$text_4 <- renderText({
           "Tvoj graf ni dvodelen!"
         })
-        output$poizvedba <- NULL
-        
+        output$poizvedba_dvo <- NULL
       }
       
       
     } else if (input$characteristic == 7){
       
-      komp <- komponente(df_react$graf$network)
+      komp <- komponente(df_react$graf$network)$a
+      graf <- komponente(df_react$graf$network)$graf
       output$text_4 <- renderText({
         paste(komp)
+      })
+      output$poizvedba_komp <- renderPlot({
+        plot(graf)
       })
     }
     
@@ -181,39 +191,65 @@ server <- function(input, output) {
   
   
   ### ZAVIHEK PROBLEMI ###
-  observeEvent(input$posodobi2,{
-    shinyjs::disable("posodobi2")
-    if (nov_graf){
-      df_react$graf = df_react$nov_graf
-    }
-    shinyjs::enable("posodobi2")
-  })
+  
+  #observeEvent(input$posodobi2,{
+  #  shinyjs::disable("posodobi2")
+  #  if (df_react$nov_graf != 0){
+  #    df_react$graf = df_react$nov_graf
+  #  }
+  #  shinyjs::enable("posodobi2")
+  #})
+  
+
+current_graph <- reactive({
+  req(df_react$graf)
+  
+  #shinyjs::disable("shrani2")
+  if (input$shrani1){
+    #shinyjs::enable("shrani1")
+    print("1")
+  df_react$graf <- povezavni(df_react$graf$network)
+  #shinyjs::enable("shrani2")
+  } 
+  #shinyjs::disable("shrani1")
+  if (input$shrani2){
+    #shinyjs::enable("shrani2")
+    print("2")
+  df_react$graf <- komplement(df_react$graf$network)
+  #shinyjs::enable("shrani1")
+  }
+  
+  df_react$graf
+  
+})  
+  
   
   
 
-  
   observeEvent(input$problem,{
     # vzamemo graf, ki je trenutno v uporabi
-    req(df_react$graf)
-    
+    df_react$graf <- current_graph()
+    print(df_react$graf$network)
+       
     
     if (input$problem == 1){
       #resujemo problem trgovskega potnika
+      
       output$text_5 <- renderText({
         "Utezi doloci po vrsti, spodaj prikazanim povezavam iz vozlisc v1 v v2."
       })
-      output$edges_1 <- renderGvis({
-      data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
-       gvisTable(data)
+      output$povezave_1 <- renderGvis({
+         data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
+         gvisTable(data)
        })
       
       
       
       
     } else if (input$problem == 4){
-      output$edges_2 <- renderGvis({
-        data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
-        gvisTable(data)
+      output$povezave_2 <- renderGvis({
+         data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
+         gvisTable(data)
       })
     
       
@@ -221,8 +257,8 @@ server <- function(input, output) {
       
     } else if (input$problem == 5){
       output$edges_3 <- renderGvis({
-        data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
-        gvisTable(data)
+         data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
+         gvisTable(data)
       })
       
       
@@ -305,8 +341,7 @@ server <- function(input, output) {
   
   observeEvent(input$button4, {
       #vzamemo graf, ki je trenutno v uporabi
-      req(df_react$graf)
-
+    req(df_react$graf)
     
     
     
@@ -402,15 +437,20 @@ server <- function(input, output) {
       } else if (input$problem == 4){
         # resujemo problem iskanja najcenejse poti med dvema vozliscema
         
+        iz <- isolate(input$zacni)
+        v <- isolate(input$finish)
+
         vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
         output$najceneje <- renderText({
-          dolzina <- najdi_najkrajso_pot(df_react$graf$network, input$zacni, input$finish, vect_utezi)$dolzina
+          dolzina <- najdi_min_pot(df_react$graf$network, iz, v, vect_utezi)$min_dolzina
           paste("Najcenejsa pot stane", dolzina, "enot.")
         })
-        output$poti <- renderText({
-          vse_poti <- najdi_najkrajso_pot(df_react$graf$network, input$start, input$finish, vect_utezi)$poti
+        output$minimum_poti <- renderPlot({
+            primer_poti <- labels(najdi_min_pot(df_react$graf$network,iz,v, vect_utezi)$min_primeri[[1]])
+            print(primer_poti)
+            graf <- set_vertex_attr(df_react$graf$network, name="color", index = primer_poti, value="red")
+            plot(graf)
         })
-        
         
         
         
@@ -451,7 +491,6 @@ server <- function(input, output) {
           gvisTable(data)
           }
         })
-        
         df_react$stanje <- play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
 
         
@@ -540,38 +579,36 @@ server <- function(input, output) {
         
       } else if (input$problem == 9){
         # resujemo problem iskanja povezavnega grafa
-        
-        shinyjs::disable("button4")
+
         output$povezavni <- renderPlot(
           plot(povezavni(df_react$graf$network)$network)
         )
-        shinyjs::enable("button4")
-        observeEvent(input$shrani1,{
-          shinyjs::disable("shrani1")
-          df_react$ok <- FALSE
-          df_react$nov_graf <- povezavni(df_react$graf$network)
-          df_react$ok <- TRUE
-          shinyjs::enable("shrani1")
-        })
+        #shinyjs::enable("shrani1")
+        #observeEvent(input$shrani1,{
+        #  if (input$shrani1 ==TRUE){
+        #  df_react$nov_graf <- povezavni(df_react$graf$network)
+        #  } else {
+        #    df_react$nov_graf <- 0
+        #  }
+        #  shinyjs::disable("shrani1")
+        #})
         
         
         
         
       } else if (input$problem == 10){
         # resujemo problem iskanja komplementarnega grafa
-        
-        shinyjs::disable("button4")
+
         output$komplementaren <- renderPlot(
           plot(komplement(df_react$graf$network)$network)
         )
-        shinyjs::enable("button4")
-        observeEvent(input$shrani2,{
-          shinyjs::disable("shrani2")
-          df_react$ok <- FALSE
-          df_react$nov_graf <- komplement(df_react$graf$network)
-          df_react$ok <- TRUE
-          shinyjs::enable("shrani2")
-        })
+        #shinyjs::enable("shrani2")
+        #observeEvent(input$shrani2,{
+        #  df_react$ok <- FALSE
+        #  df_react$nov_graf <- komplement(df_react$graf$network)
+        #  df_react$ok <- TRUE
+        #  shinyjs::disable("shrani2")
+        #})
       }
           })
 

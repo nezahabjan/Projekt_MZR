@@ -1,5 +1,5 @@
 
-## v tej datoteki bom bele?ila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
+## v tej datoteki bom belezila glavne funkcije v projektu, ki se bodo potem uporabljale in klicale v shiny aplikaciji
 
 
 ### najprej nastavimo funkcije, ki bodo vrnile osnovne grafovske lastnosti poljubnega grafa
@@ -36,8 +36,8 @@ narisi_poln <- function(n, dir){
   
   return(list("network"=network, "matrika"=matrika))
 }
-#b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo še atribut usmerjenosti
-# diagonalo tudi upoštevamo, glede na to da je izbor naš
+#b) v primeru, da imamo svoj graf pripravljen, vnesemo povezavno matriko in ga izrisemo, dodamo se atribut usmerjenosti
+# diagonalo tudi upostevamo, glede na to da je izbor nas
 narisi_pripravljen <- function(adj_matrika, directed){
   if (directed ==1){
     mode <- "undirected"
@@ -130,7 +130,7 @@ poisci_cikle <- function(g){
           
           for (kandidat in range(1:length(dobri_cikli))){
             if (dobri_cikli[kandidat] %in% values(izbrani_cikli)){
-              #print("Ta cikel že imamo")
+              #print("Ta cikel ze imamo")
             } else {
               #print("ta cikel gre med izbrane")
               stevilo <- stevilo + 1
@@ -164,16 +164,21 @@ najdaljsa_razdalja <- function(graf){
 }
 
 
-# G) funkcija pove ali je graf sestavljen iz ene ali veèih komponent in jih vrne loèene
+# G) funkcija pove ali je graf sestavljen iz ene ali vecih komponent in jih vrne locene
 komponente <- function(graf){
   if (is_connected(graf)) {
     a <-"Graf je povezan!"
+    tipi <- components(graf)[[1]]
   } else {
     stevilo <- count_components(graf)
     a <- paste("Graf je sestavljen iz ", stevilo, "komponent. Tu je prikazana pripadnost vozlisc vsaki od njih.")
-    #components(graf)[[1]]
+    tipi <- components(graf)[[1]]
   }
-  return(print(a))
+  barvanje <- tipi
+  graf <- graf %>% set_vertex_attr("color", value = barvanje)
+  
+  
+  return(list("a"=a, "graf"=graf))
 }
 
 
@@ -184,16 +189,17 @@ return(razdalja)
 }
 
 
-# J) funkcija, ki preveri ali je graf dvodelen ali ne in izriše možni komponenti v primeru dvodelnosti
+# J) funkcija, ki preveri ali je graf dvodelen ali ne in izrise mozni komponenti v primeru dvodelnosti
 dvodelen <- function(graf){
   dvo <- bipartite.mapping(graf)[[1]]
-  return(dvo)
+  logical <- as.vector(bipartite.mapping(graf)$type)
+  return(list("dvo"=dvo, "logical"=logical))
 }
 
 
 # estimate_closeness(graf$network, normalized=TRUE, cutoff = 0, weigths)
 # automorphisms za iskanje avto ali izomorfisms izomorfizmov
-# permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, èe ti ni všeè
+# permute(graf$network, permutation = c(2,5,3,6,7,4,1, 8,9)) za preoblikovanje grafa, ce ti ni vsec
 
 
 
@@ -220,6 +226,13 @@ sestavi_matriko_utezi <- function(graf, vektor){
     for (j in 1:num_oglisc){
       if (matrika_utezi[i,j] == 0){
         matrika_utezi[i,j] <- 10000
+      }
+    }
+  }
+  if (is_directed(graf) == FALSE){
+    for (i in 1:num_oglisc){
+      for (j in 1:num_oglisc){
+      matrika_utezi[j,i] <- matrika_utezi[i,j]
       }
     }
   }
@@ -258,20 +271,23 @@ PTP <- function(graf, v1, matrika_utezi){
 kromaticno_stevilo <- function(g) {
   #najvecje mozno kromaticno stevilo je stevilo vozlisc grafa
   vse_barve <- c(1:length(V(g)))
+  print(vse_barve)
   V(g)$color <- c(0)
   v_zaporedje <- order(degree(g), decreasing = TRUE)
+  print(v_zaporedje)
   "%ni%" <- Negate("%in%")
   lapply(v_zaporedje, function(i) V(g)$color[i] <<- min(vse_barve[vse_barve %ni%
-                                                                 sapply(neighbors(g, i), function(j) {
+                                                                 sapply(neighbors(g, i, "total"), function(j) {
                                                                    V(g)$color[j]
                                                                  })]))
   barvanje <- V(g)$color
   names(barvanje) <- V(g)
-  
+
   g <- g %>% set_vertex_attr("color", value = barvanje)
 
   return(list("krom_stevilo" = max(V(g)$color), "barvanje" = barvanje, "slika"=g))
 }
+
 
 
 # c) ravninskost grafa
@@ -322,7 +338,7 @@ return("pojavitev"=pojavitev)
 
 
 
-# e) problem minimalne elektriène napeljave
+# e) problem minimalne elektricne napeljave
 #resujemo s pomocjo iskanja minimalnega vpetega drevesa v grafu, funkcija vrne drevo ki predstavlja napeljavo
 #dobimo tudi ceno napeljave po tem minimalnem drevesu
 PMEN <- function(g, vect_utezi){
@@ -384,7 +400,7 @@ play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
 # g) Eulerjev graf
 #raziskujemo, ali je graf Eulerjev ali ne (ali vsebuje Eulerjev obhod)
 #ali je graf poleulerjev? (ali vsebuje Eulerjev sprehod)
-#s koliko najmanj potezami lahko graf narišemo?
+#s koliko najmanj potezami lahko graf narisemo?
 Euler <- function(g, v1){
   graph <- as_graphnel(g)
   min_st_potez <- 0
@@ -411,7 +427,7 @@ Euler <- function(g, v1){
     }
   
   
-  #sedaj poišèimo najmanjše število potez za risanje grafa
+  #sedaj poiscimo najmanjse stevilo potez za risanje grafa
   if (min_st_potez ==0){
     min_st_potez <- stej_liho(degree(g))/2
   }
@@ -463,4 +479,22 @@ komplement <- function(g){
   network <- kompl
   return(list("kompl"=kompl, "network"=network))
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
