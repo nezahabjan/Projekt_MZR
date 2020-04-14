@@ -82,7 +82,7 @@ body <- dashboardBody(
               actionButton("button3", "Poslji poizvedbo")
             ),
             
-            mainPanel(
+            box( title = "Rezultat poizvedbe",
               textOutput("text_4"),
               conditionalPanel(
                 condition = "input.characteristic == '1'",
@@ -232,7 +232,7 @@ body <- dashboardBody(
             
             
             
-            mainPanel(
+            box( title = "Resitev problema",
               
               conditionalPanel(
                 condition = "input.problem =='1'",
@@ -352,7 +352,9 @@ body <- dashboardBody(
 
 
 
-sidebar <- dashboardSidebar(hr(),
+sidebar <- dashboardSidebar(
+                         div(class = "inlay", style = "height:30px;width:100%;background-color: #ecf0f5;"),
+                             hr(),
                             sidebarMenu(id="vnos",
                                         menuItem("Vnos grafa", tabName = "vnos", selected = TRUE)),
                             sidebarMenu(id="lastnosti", 
