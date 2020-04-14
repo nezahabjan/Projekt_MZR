@@ -1,5 +1,6 @@
 
 #pozenemo na zacetku, da dobimo potrebno
+library(RBGL)
 library(igraph)
 library(ggraph)
 library(networkD3)
@@ -11,4 +12,10 @@ library(TSP)
 library(pracma)
 library(randomGLM)
 library(googleVis)
-
+library(colormap)
+library(colortools)
+library(lpSolve)
+library(DiagrammeR)
+library(lightsout)
+library(hash)
+library(eulerian)
