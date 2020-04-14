@@ -275,7 +275,7 @@ body <- dashboardBody(
                   condition = "input.nadaljevanje =='3'",
                   p("To je zacetna igra, ki jo resujes:"),
                   htmlOutput("zacetna_igra"),
-                  actionButton("button8", "Zacni z igro"),
+                  actionButton("button8", "Zacni z igro")
                 ),
                 conditionalPanel(
                   condition = "input.nadaljevanje =='1'",
@@ -288,7 +288,8 @@ body <- dashboardBody(
                   p("Kje se nahaja zarnica, ki ji bos spremenil stanje?"),
                   numericInput("x", "vrstica", value = 0, min=0),
                   numericInput("y", "stolpec", value = 0, min=0),
-                  p("Ko se odlocis, klikni gumb 'Resi problem', da preveris svojo odlocitev.")
+                  p("Ko se odlocis, klikni gumb 'Spremeni', da preveris svojo odlocitev."),
+                  actionButton("button11", "Spremeni")
                 ),
                 p("Trenutna stanja zarnic:"),
                 htmlOutput("stanja")
@@ -372,7 +373,7 @@ ui <- fluidPage(useShinyjs(),
                   dashboardHeader(title = "Problemi na grafih"),
                   sidebar,
                   body,
-                  skin = "black"),
+                  skin = "purple"),
                 theme="flatly"
 )
 

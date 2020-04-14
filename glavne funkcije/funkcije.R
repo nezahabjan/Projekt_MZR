@@ -319,10 +319,11 @@ najdi_min_pot <- function(g, iz, v, vect_utezi){
     #max_primeri <- 0
     min_primeri <- 0
   } else {
-    min_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)$res
+    min_poti <- all_shortest_paths(g, iz, v, weights=vect_utezi)$res[[1]]
     enostavne_poti <- all_simple_paths(g, iz, v)
     min_dolzina <- min(distances(g, iz, v, weights = g$weight))
-    min_primeri <- min_poti[which(sapply(min_poti, function(x) {distances(g, iz, v)}) < (min_dolzina+1))]
+    min_primeri <- min_poti
+    #[which(sapply(min_poti, function(x) {distances(g, iz, v)}) < (min_dolzina+1))]
     #max_primeri <- enostavne_poti[which(sapply(enostavne_poti, length) > (max_dolzina-1))]
   }
 

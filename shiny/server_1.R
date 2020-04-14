@@ -223,7 +223,15 @@ current_graph <- reactive({
   
 })  
   
+stanje <- reactive({
   
+  input$button11
+  req(df_react$stanje)
+  x <- input$x
+  y <- input$y
+  play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
+  
+})  
   
 
   observeEvent(input$problem,{
@@ -317,6 +325,19 @@ current_graph <- reactive({
           })
         }
       })
+      
+      observeEvent(input$button11,{
+        
+
+        stanje <- stanje()
+        df_react$stanje <- stanje
+        
+        output$stanja <-renderGvis({
+          data <- as.data.frame(stanje)
+          gvisTable(data)
+        })
+       
+      })
 
       observeEvent(input$button7, {
         zaigraj <- req(df_react$igra)
@@ -388,7 +409,7 @@ current_graph <- reactive({
       # razlozimo kaj pomeni drag obhod
       if (dolzina > 10000){
         output$text_9 <- renderText({
-            "Graf ima zelo malo povezav, zato najcenejsega obhoda na tvojem grafu ni!"
+            "Graf ima zelo malo povezav, zato najcenejsega obhoda na tvojem grafu ni! Vseeno ti ponujam obhod, ki bi ga uporabil, ce bi dolocene povezave obstajale.."
         })
         } else {
         output$text_9 <- NULL
@@ -436,17 +457,14 @@ current_graph <- reactive({
         
       } else if (input$problem == 4){
         # resujemo problem iskanja najcenejse poti med dvema vozliscema
-        
-        iz <- isolate(input$zacni)
-        v <- isolate(input$finish)
 
         vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
         output$najceneje <- renderText({
-          dolzina <- najdi_min_pot(df_react$graf$network, iz, v, vect_utezi)$min_dolzina
+          dolzina <- najdi_min_pot(df_react$graf$network, input$zacni, input$finish, vect_utezi)$min_dolzina
           paste("Najcenejsa pot stane", dolzina, "enot.")
         })
         output$minimum_poti <- renderPlot({
-            primer_poti <- labels(najdi_min_pot(df_react$graf$network,iz,v, vect_utezi)$min_primeri[[1]])
+            primer_poti <- najdi_min_pot(df_react$graf$network,input$zacni,input$finish, vect_utezi)$min_primeri
             print(primer_poti)
             graf <- set_vertex_attr(df_react$graf$network, name="color", index = primer_poti, value="red")
             plot(graf)
@@ -470,7 +488,7 @@ current_graph <- reactive({
         )
         
         
-        
+
         
         
         
