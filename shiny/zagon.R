@@ -20,6 +20,7 @@ library(DiagrammeR)
 library(lightsout)
 library(hash)
 library(eulerian)
+library(shinythemes)
 
 
 

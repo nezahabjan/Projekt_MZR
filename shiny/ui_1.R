@@ -64,7 +64,7 @@ body <- dashboardBody(
     tabItem(tabName = "lastnosti",
             
             fluidRow(sidebarPanel(
-              h3("Bi rad izvedel kaj o osnovnih lastnostih tvojega grafa?"),
+              h3("OSNOVNE GRAFOVSKE LASTNOSTI"),
               #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
               #actionButton("posodobi1", "Posodobi"),
               box( title = "IZBOR LASTNOSTI", status = "primary",
@@ -114,7 +114,7 @@ body <- dashboardBody(
     tabItem(tabName = "problemi",
             
             fluidRow(sidebarPanel(
-              h3("Bi rad na svojem grafu modeliral kaksen problem?"),
+              h3("MODELIRANJE PROBLEMOV NA GRAFIH"),
               #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
               #actionButton("posodobi2", "Posodobi"),
               box (title = "IZBOR PROBLEMA", status = "primary",
@@ -226,7 +226,7 @@ body <- dashboardBody(
                 p("Bi rad videl kaksen je pripadajoc komplementaren graf tvojega grafa?")
               ),
 
-              actionButton("button4", "Resi problem")
+              actionButton("button4", "Resitev")
             )),
             
             
@@ -353,9 +353,7 @@ body <- dashboardBody(
 
 
 
-sidebar <- dashboardSidebar(
-                         div(class = "inlay", style = "height:30px;width:100%;background-color: #ecf0f5;"),
-                             hr(),
+sidebar <- dashboardSidebar(hr(),
                             sidebarMenu(id="vnos",
                                         menuItem("Vnos grafa", tabName = "vnos", selected = TRUE)),
                             sidebarMenu(id="lastnosti", 
@@ -370,11 +368,12 @@ sidebar <- dashboardSidebar(
 
 ui <- fluidPage(useShinyjs(),
                 dashboardPage(
-                  dashboardHeader(title = "Problemi na grafih"),
+                  dashboardHeader(title = "PROBLEMI NA GRAFIH"),
                   sidebar,
                   body,
-                  skin = "purple"),
-                theme="flatly"
+                  skin = "black"
+                  ),
+                theme = shinytheme("journal")
 )
 
 
