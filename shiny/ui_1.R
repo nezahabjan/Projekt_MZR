@@ -10,7 +10,7 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("Dobrodosel v svetu grafov!"),
-              box( title ="VNOS ATRIBUTOV", status = "primary",
+              box(width=12, title ="VNOS ATRIBUTOV", status = "primary",
               selectInput("generate", "Naj ti graf generiram jaz, ali imas ze izbranega? ",
                           choices = list("generiraj" = 1,
                                          "imam_svoj_graf"=2,
@@ -67,7 +67,7 @@ body <- dashboardBody(
               h3("OSNOVNE GRAFOVSKE LASTNOSTI"),
               #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
               #actionButton("posodobi1", "Posodobi"),
-              box( title = "IZBOR LASTNOSTI", status = "primary",
+              box(width=12, title = "IZBOR LASTNOSTI", status = "primary",
               radioButtons("characteristic", 
                            h3("Izberi karakteristike, ki te zanimajo"),
                            choices = list("stopnje" = 1, 
@@ -117,7 +117,7 @@ body <- dashboardBody(
               h3("MODELIRANJE PROBLEMOV NA GRAFIH"),
               #p("Klikni gumb 'Posodobi', da najprej osvezis podatke o grafu, ki ga preiskujes :)"),
               #actionButton("posodobi2", "Posodobi"),
-              box (title = "IZBOR PROBLEMA", status = "primary",
+              box (width=12, title = "IZBOR PROBLEMA", status = "primary",
               selectInput("problem", "Katerega od problemov se bos lotil?",
                           choices = list("Problem trgovskega potnika" = 1,
                                          "Barvanje grafa"=2,
@@ -128,8 +128,8 @@ body <- dashboardBody(
                                          "Graficnost zaporedja" = 7,
                                          "Eulerjeva lastnost" = 8,
                                          "Ustvari povezavni graf" = 9,
-                                         "Ustvari komplementaren graf" = 10), selected = 3)),
-              box(title = "RESEVANJE", status = "info",
+                                         "Ustvari komplementaren graf" = 10), selected = 3),
+              
               conditionalPanel(
                 condition = "input.problem =='1'",
                 p("Izbral si problem trgovskega potnika, zato moras povezavam najprej dolociti utezi. Te lahko predstavljajo ceno voznje, porabljen cas, energijo, kolicino nafte,..."),
@@ -232,7 +232,7 @@ body <- dashboardBody(
             
             
             
-            box( title = "RESITEV PROBLEMA", status = "success",
+            box(title = "RESITEV PROBLEMA", status = "success",
               
               conditionalPanel(
                 condition = "input.problem =='1'",
