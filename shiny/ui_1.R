@@ -371,7 +371,7 @@ ui <- fluidPage(useShinyjs(),
                   dashboardHeader(title = "PROBLEMI NA GRAFIH"),
                   sidebar,
                   body,
-                  skin = "black"
+                  skin = "blue"
                   ),
                 theme = shinytheme("journal")
 )
