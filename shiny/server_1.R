@@ -204,34 +204,29 @@ server <- function(input, output) {
 current_graph <- reactive({
   req(df_react$graf)
   
-  #shinyjs::disable("shrani2")
+  input$shrani1
+  input$shrani2
+  
   if (input$shrani1){
-    #shinyjs::enable("shrani1")
-    print("1")
   df_react$graf <- povezavni(df_react$graf$network)
-  #shinyjs::enable("shrani2")
   } 
-  #shinyjs::disable("shrani1")
   if (input$shrani2){
-    #shinyjs::enable("shrani2")
-    print("2")
   df_react$graf <- komplement(df_react$graf$network)
-  #shinyjs::enable("shrani1")
   }
   
   df_react$graf
   
 })  
   
-stanje <- reactive({
-  
-  input$button11
-  req(df_react$stanje)
-  x <- input$x
-  y <- input$y
-  play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
-  
-})  
+#stanje <- reactive({
+#  
+#  input$button11
+#  req(df_react$stanje)
+#  x <- input$x
+#  y <- input$y
+#  play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
+#  
+#})  
   
 
   observeEvent(input$problem,{
@@ -251,7 +246,7 @@ stanje <- reactive({
          gvisTable(data)
        })
       
-      
+     
       
       
     } else if (input$problem == 4){
@@ -273,86 +268,86 @@ stanje <- reactive({
       
       
       
-    } else if (input$problem == 6){
-      observeEvent(input$button6, {
-        obstaja <- PUL(df_react$graf$network)$resljivo
-        if (obstaja == "DA"){
-          output$solvable <- renderText({
-            "Igro lahko igras na tvojem grafu, resitev obstaja."
-          })
-        } else if (obstaja == "NE"){
-          output$solvable <- renderText({
-            "Ta igra ni resljiva na tvojem grafu. Lahko si izberes drugega in poskusis ponovno, ali pa mi povej liho stevilo dimenzije matrike in podal ti bom nakljucen zacetek igre."
-          })
-        }
-      })
+    } #else if (input$problem == 6){
+      #observeEvent(input$button6, {
+      #  obstaja <- PUL(df_react$graf$network)$resljivo
+      #  if (obstaja == "DA"){
+      #    output$solvable <- renderText({
+      #      "Igro lahko igras na tvojem grafu, resitev obstaja."
+      #    })
+      #  } else if (obstaja == "NE"){
+      #    output$solvable <- renderText({
+      #      "Ta igra ni resljiva na tvojem grafu. Lahko si izberes drugega in poskusis ponovno, ali pa mi povej liho stevilo dimenzije matrike in podal ti bom nakljucen zacetek igre."
+      #    })
+      #  }
+      #})
       
-      observeEvent(input$nadaljevanje, {
-        if (input$nadaljevanje ==1){
-        output$matrika_grafa <- renderGvis({
-          data <- as.data.frame(as.matrix(get.adjacency(df_react$graf$network)), names=TRUE)
-          gvisTable(data)
-        })
-        df_react$stanje <- as.matrix(get.adjacency(df_react$graf$network))
-        
-        } else {
-          output$matrika_grafa <- NULL
-        }
-        output$odlocitev <- renderText({
-          if (input$nadaljevanje ==1){
-            paste("Dobro, potem nadaljujva z igro.")
-          } else if (input$nadaljevanje ==2){
-            paste("Vrni se potem na prvi zavihek in ponovno izberi graf.")
-          } else if (input$nadaljevanje ==3){
-            paste("V redu, doloci liho stevilo za dimenzijo matrike.")
-          }
-        })
-      })
+      #observeEvent(input$nadaljevanje, {
+      #  if (input$nadaljevanje ==1){
+      #  output$matrika_grafa <- renderGvis({
+      #    data <- as.data.frame(as.matrix(get.adjacency(df_react$graf$network)), names=TRUE)
+      #    gvisTable(data)
+      #  })
+      #  df_react$stanje <- as.matrix(get.adjacency(df_react$graf$network))
+      #  
+      #  } else {
+      #    output$matrika_grafa <- NULL
+      #  }
+      #  output$odlocitev <- renderText({
+      #    if (input$nadaljevanje ==1){
+      #      paste("Dobro, potem nadaljujva z igro.")
+      #    } else if (input$nadaljevanje ==2){
+      #      paste("Vrni se potem na prvi zavihek in ponovno izberi graf.")
+      #    } else if (input$nadaljevanje ==3){
+      #      paste("V redu, doloci liho stevilo za dimenzijo matrike.")
+      #    }
+      #  })
+      #})
       
-      observeEvent(input$dimenzija, {
-        if (input$dimenzija %in% c(3,5,7,9)){
-          df_react$igra <- random_board(input$dimenzija)
-          board_matrix <- df_react$igra$entries
-          df_react$stanje <- board_matrix
-          output$zacetna_igra <- renderGvis({
-            paste("Zacetna igra:")
-            data <- as.data.frame(board_matrix)
-            gvisTable(data)
-          })
-        } else {
-          output$zacetna_igra <- renderUI({
-            paste("Popravi izbrano vrednost dimenzije!")
-          })
-        }
-      })
-      
-      observeEvent(input$button11,{
-        
+      #observeEvent(input$dimenzija, {
+      #  if (input$dimenzija %in% c(3,5,7,9)){
+      #    df_react$igra <- random_board(input$dimenzija)
+      #    board_matrix <- df_react$igra$entries
+      #    df_react$stanje <- board_matrix
+      #    output$zacetna_igra <- renderGvis({
+      #      paste("Zacetna igra:")
+      #      data <- as.data.frame(board_matrix)
+      #      gvisTable(data)
+      #    })
+      #  } else {
+      #    output$zacetna_igra <- renderUI({
+      #      paste("Popravi izbrano vrednost dimenzije!")
+      #    })
+      #  }
+      #})
+     # 
+    #  observeEvent(input$button11,{
+    #    
+    #
+    #    stanje <- stanje()
+    #    df_react$stanje <- stanje
+    #    
+    #    output$stanja <-renderGvis({
+    #      data <- as.data.frame(stanje)
+    #      gvisTable(data)
+    #    })
+    #   
+    #  })
 
-        stanje <- stanje()
-        df_react$stanje <- stanje
-        
-        output$stanja <-renderGvis({
-          data <- as.data.frame(stanje)
-          gvisTable(data)
-        })
-       
-      })
-
-      observeEvent(input$button7, {
-        zaigraj <- req(df_react$igra)
-        if (input$nadaljevanje == 3){
-          igra <- as.matrix(solve_board(zaigraj))
-          output$resitev <- renderDataTable(igra)
-        } else {
-          igra <- as.data.frame(PUL(df_react$graf$network)$resitev)
-        }
-        output$resitev <- renderImage(
-          return(list(src=igra,
-              contentType = "image/png"))
-          )
-      })
-    }
+    #  observeEvent(input$button7, {
+    #    zaigraj <- req(df_react$igra)
+    #    if (input$nadaljevanje == 3){
+    #      igra <- as.matrix(solve_board(zaigraj))
+    #      output$resitev <- renderDataTable(igra)
+    #    } else {
+    #      igra <- as.data.frame(PUL(df_react$graf$network)$resitev)
+    #    }
+    #    output$resitev <- renderImage(
+    #      return(list(src=igra,
+    #          contentType = "image/png"))
+    #      )
+    #  })
+    #}
     })
   
   
@@ -368,6 +363,7 @@ stanje <- reactive({
     
       if (input$problem == 1){
       # resujemo problem trgovskega potnika
+        shinyjs::disable("button4")
         
       #preberemo vnesene utezi uporabnika
       vect_utezi <- as.numeric(unlist(strsplit(input$utezi_1, ",")))
@@ -416,13 +412,14 @@ stanje <- reactive({
         }
       
       
-      
+  
       
         
 
       } else if (input$problem == 2){
     # resujemo problem barvanja grafa
-     
+        shinyjs::disable("button4")
+        
         output$krom_num <- renderText({
           paste("Tvoj graf lahko obarvamo z najmanj", kromaticno_stevilo(df_react$graf$network)$krom_stevilo, "barvami. Resitev vidis spodaj!")
         })
@@ -433,9 +430,9 @@ stanje <- reactive({
         
         
         
-        
       } else if (input$problem == 3){
         # resujemo problem ravninskosti grafa
+        shinyjs::disable("button4")
         
         if (ravninski(df_react$graf$network)$planar == TRUE){
           output$planarity <- renderText({
@@ -451,13 +448,14 @@ stanje <- reactive({
         )
         
         
-        
+       
         
         
         
       } else if (input$problem == 4){
         # resujemo problem iskanja najcenejse poti med dvema vozliscema
-
+        shinyjs::disable("button4")
+        
         vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
         output$najceneje <- renderText({
           dolzina <- najdi_min_pot(df_react$graf$network, input$zacni, input$finish, vect_utezi)$min_dolzina
@@ -477,6 +475,7 @@ stanje <- reactive({
         
       } else if (input$problem == 5){
         # resujemo problem minimalne elektricne napeljave
+        shinyjs::disable("button4")
         
         vect_utezi <- as.numeric(unlist(strsplit(input$utezi_3, ",")))
         output$min_cena <- renderText({
@@ -488,36 +487,37 @@ stanje <- reactive({
         )
         
         
-
         
         
         
         
-      } else if (input$problem == 6){
+      } #else if (input$problem == 6){
         # resujemo problem ugasanja luci
-
-        req(df_react$stanje)
-        shinyjs::disable("button4")
-        df_react$ok <- FALSE
-        x <- input$x
-        y <- input$y
-        df_react$ok <- TRUE
-        output$stanja <-renderGvis({
-          if (df_react$ok == TRUE) {
-            shinyjs::enable("button4")
-          data <- as.data.frame(play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje))
-          gvisTable(data)
-          }
-        })
-        df_react$stanje <- play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
+      #
+      #  req(df_react$stanje)
+      #  shinyjs::disable("button4")
+      #  df_react$ok <- FALSE
+      #  x <- input$x
+      #  y <- input$y
+      #  df_react$ok <- TRUE
+      #  output$stanja <-renderGvis({
+      #    if (df_react$ok == TRUE) {
+      #      shinyjs::enable("button4")
+      #    data <- as.data.frame(play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje))
+      #    gvisTable(data)
+      #    }
+      #  })
+      #  df_react$stanje <- play_PUL(df_react$graf$network, df_react$igra, x, y, df_react$stanje, input$nadaljevanje)
 
         
         
       
         
-      } else if (input$problem == 7){
-        # resujemo problem ugotavljanja graficnosti problema
-        
+      #} 
+    else if (input$problem == 7){
+        # resujemo problem ugotavljanja graficnosti zaporedja
+      shinyjs::disable("button4")  
+      
           if (input$graficnost ==1){
             vhodne <- as.numeric(unlist(strsplit(input$in_stopnje, ",")))
             izhodne <- as.numeric(unlist(strsplit(input$out_stopnje, ",")))
@@ -549,7 +549,7 @@ stanje <- reactive({
           output$graf_iz_zaporedja <- NULL
           }
         
-        
+      
         
 
       }  else if (input$problem == 8){
@@ -597,7 +597,7 @@ stanje <- reactive({
         
       } else if (input$problem == 9){
         # resujemo problem iskanja povezavnega grafa
-
+        shinyjs::disable("button4")
         output$povezavni <- renderPlot(
           plot(povezavni(df_react$graf$network)$network)
         )
@@ -616,7 +616,7 @@ stanje <- reactive({
         
       } else if (input$problem == 10){
         # resujemo problem iskanja komplementarnega grafa
-
+        shinyjs::disable("button4")
         output$komplementaren <- renderPlot(
           plot(komplement(df_react$graf$network)$network)
         )
@@ -627,7 +627,13 @@ stanje <- reactive({
         #  df_react$ok <- TRUE
         #  shinyjs::disable("shrani2")
         #})
+        
+        
+        
       }
+    
+    shinyjs::enable("button4")
+    
           })
 
 }    

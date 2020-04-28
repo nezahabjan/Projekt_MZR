@@ -123,8 +123,7 @@ body <- dashboardBody(
                                          "Barvanje grafa"=2,
                                          "Ravninskost grafa"=3,
                                          "Iskanje najcenejse poti"=4,
-                                         "Problem minimalne elektricne napeljave"=5,
-                                         "Problem ugasanja luci" = 6,
+                                         "Iskanje minimalnega vpetega drevesa"=5,
                                          "Graficnost zaporedja" = 7,
                                          "Eulerjeva lastnost" = 8,
                                          "Ustvari povezavni graf" = 9,
@@ -168,24 +167,24 @@ body <- dashboardBody(
                 textInput("utezi_3", "Vnesi celostevilske vrednosti, locene z vejico.", value="")
               ),
               
-              conditionalPanel(
-                condition = "input.problem =='6'",
-                p("Izbral si si igro ugasanja luci, ki jo bom modeliral s tvojim grafom. Najprej poglejva, ce igro na tvojem grafu sploh lahko igrava. Imeti mora namrec liho stevilo vozlisc, njegova povezavna matrika pa mora biti ustrezen zacetek igre."),
-                actionButton("button6", "Preveri resljivost"),
-                textOutput("solvable"),
-                selectInput("nadaljevanje", "Bos nadaljeval igro na ze zaceti, si izbral drug graf ali ti igro generiram jaz?",
-                            choices = list("nadaljuj"=1,
-                                           "izbral bom drug graf"=2,
-                                           "generiraj mi igro"=3,
-                                           "/"= 4), selected = 4),
-                textOutput("odlocitev"),
-                conditionalPanel(
-                  condition = "input.nadaljevanje =='3'",
-                  numericInput(inputId = "dimenzija", "Vrednost naj bo eno od stevil 3, 5, 7 ali 9!", value =0, min=0),
-                )
+              #conditionalPanel(
+              #  condition = "input.problem =='6'",
+              #  p("Izbral si si igro ugasanja luci, ki jo bom modeliral s tvojim grafom. Najprej poglejva, ce igro na tvojem grafu sploh lahko igrava. Imeti mora namrec liho stevilo vozlisc, njegova povezavna matrika pa mora biti ustrezen zacetek igre."),
+              #  actionButton("button6", "Preveri resljivost"),
+              #  textOutput("solvable"),
+              #  selectInput("nadaljevanje", "Bos nadaljeval igro na ze zaceti, si izbral drug graf ali ti igro generiram jaz?",
+              #              choices = list("nadaljuj"=1,
+              #                             "izbral bom drug graf"=2,
+              #                             "generiraj mi igro"=3,
+              #                             "/"= 4), selected = 4),
+              #  textOutput("odlocitev"),
+              #  conditionalPanel(
+              #    condition = "input.nadaljevanje =='3'",
+              #    numericInput(inputId = "dimenzija", "Vrednost naj bo eno od stevil 3, 5, 7 ali 9!", value =0, min=0),
+              #  )
                 
                 #actionButton("button7", "Oglej si resitev")
-              ),
+              #),
               
               conditionalPanel(
                 condition = "input.problem =='7'",
@@ -267,33 +266,33 @@ body <- dashboardBody(
                 plotOutput("napeljava")
               ),
               
-              conditionalPanel(
-                condition = "input.problem =='6'",
+              #conditionalPanel(
+              #  condition = "input.problem =='6'",
                 #p("Ce si obupal mi sporoci.. Tu ti bom pokazal resitev igre."),
                 #imageOutput("resitev")
-                conditionalPanel(
-                  condition = "input.nadaljevanje =='3'",
-                  p("To je zacetna igra, ki jo resujes:"),
-                  htmlOutput("zacetna_igra"),
-                  actionButton("button8", "Zacni z igro")
-                ),
-                conditionalPanel(
-                  condition = "input.nadaljevanje =='1'",
-                  p("To je zacetna igra, ki jo resujes:"),
-                  htmlOutput("matrika_grafa"),
-                  actionButton("button9", "Zacni z igro")
-                ),
-                conditionalPanel(
-                  condition = "input.button9 || input.button8",
-                  p("Kje se nahaja zarnica, ki ji bos spremenil stanje?"),
-                  numericInput("x", "vrstica", value = 0, min=0),
-                  numericInput("y", "stolpec", value = 0, min=0),
-                  p("Ko se odlocis, klikni gumb 'Spremeni', da preveris svojo odlocitev."),
-                  actionButton("button11", "Spremeni")
-                ),
-                p("Trenutna stanja zarnic:"),
-                htmlOutput("stanja")
-              ),
+              #  conditionalPanel(
+              #    condition = "input.nadaljevanje =='3'",
+              #    p("To je zacetna igra, ki jo resujes:"),
+              #    htmlOutput("zacetna_igra"),
+              #    actionButton("button8", "Zacni z igro")
+              #  ),
+              #  conditionalPanel(
+              #    condition = "input.nadaljevanje =='1'",
+              #    p("To je zacetna igra, ki jo resujes:"),
+              #    htmlOutput("matrika_grafa"),
+              #    actionButton("button9", "Zacni z igro")
+              #  ),
+              #  conditionalPanel(
+              #    condition = "input.button9 || input.button8",
+              #    p("Kje se nahaja zarnica, ki ji bos spremenil stanje?"),
+              #    numericInput("x", "vrstica", value = 0, min=0),
+              #    numericInput("y", "stolpec", value = 0, min=0),
+              #    p("Ko se odlocis, klikni gumb 'Spremeni', da preveris svojo odlocitev."),
+              #    actionButton("button11", "Spremeni")
+              #  ),
+              #  p("Trenutna stanja zarnic:"),
+              #  htmlOutput("stanja")
+              #),
               
               conditionalPanel(
                 condition = "input.problem =='7'",
