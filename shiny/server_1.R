@@ -3,6 +3,24 @@
 server <- function(input, output) {
   
   
+  current_graph <- reactive({
+    req(df_react$graf)
+    
+    input$uporabi_line
+    input$uporabi_kompl
+    
+    if (input$uporabi_line == 1){
+      df_react$graf <- output$povezavni
+    } 
+    if (input$uporabi_kompl == 1){
+      df_react$graf <- output$komplementaren
+    }
+    
+    df_react$graf
+    
+  })  
+  
+  
   ### ZAVIHEK VNOS GRAFA ###
   
   # uporabnika vprasamo ali ima graf ze izbran ali naj mu ga predlaga program
@@ -82,11 +100,10 @@ server <- function(input, output) {
   
   ### ZAVIHEK LASTNOSTI ###
   
-  
-  
   observeEvent( input$button3, {
-    df_react$graf <- current_graph()
-    #req(df_react$graf)
+    req(df_react$graf)
+    #df_react$graf <- current_graph()
+
     
     if (input$characteristic == 1){
       output$poizvedba_st <- renderText({
@@ -110,11 +127,11 @@ server <- function(input, output) {
         })
       
       if (is_directed(df_react$graf$network)=="TRUE" & DAG(df_react$graf$network) == "TRUE"){
-        output$text_4 <- renderText({
+        output$text_5 <- renderText({
           "Tvoj graf je aciklicen in usmerjen!"
            })
       } else {
-        output$text_4 <- renderText({
+        output$text_5 <- renderText({
           "Tu je seznam ciklov grafa:"
         })
         }
@@ -124,10 +141,9 @@ server <- function(input, output) {
       
       } else if (input$characteristic == 3){
       stevilo_povezav <- povezave(df_react$graf$network)
-      output$text_4 <- renderText({
+      output$text_6 <- renderText({
         paste("Tvoj graf ima", stevilo_povezav, "povezav.")
       })
-      output$poizvedba <- NULL
       
       
       
@@ -137,7 +153,7 @@ server <- function(input, output) {
         postavitev <- dvodelen(df_react$graf$network)$logical
         
         if (bipartite == TRUE){
-          output$text_4 <- renderText({
+          output$text_7 <- renderText({
             "Tvoj graf je dvodelen! Prepricaj se s spodnjim prikazom."
           })
           output$poizvedba_dvo <- renderPlot({
@@ -146,7 +162,7 @@ server <- function(input, output) {
           })
           
         } else {
-          output$text_4 <- renderText({
+          output$text_7 <- renderText({
             "Tvoj graf ni dvodelen!"
           })
           output$poizvedba_dvo <- NULL
@@ -156,10 +172,9 @@ server <- function(input, output) {
    }  else if (input$characteristic == 5){
       
       diam <- najdaljsa_razdalja(df_react$graf$network)
-      output$text_4 <- renderText({
+      output$text_8 <- renderText({
         paste("Najdaljsa razdalja v grafu meri", diam ,"enot.") 
       })
-      output$poizvedba <- NULL
       
       
       
@@ -167,10 +182,9 @@ server <- function(input, output) {
     } else if (input$characteristic == 6){
       
       radij <- najkrajsa_razdalja(df_react$graf$network)
-      output$text_4 <- renderText({
+      output$text_9 <- renderText({
         paste("Najkrajsa razdalja v grafu meri", radij ,"enot.") 
       })
-      output$poizvedba <- NULL
       
       
       
@@ -179,7 +193,7 @@ server <- function(input, output) {
       
       komp <- komponente(df_react$graf$network)$a
       graf <- komponente(df_react$graf$network)$graf
-      output$text_4 <- renderText({
+      output$text_10 <- renderText({
         paste(komp)
       })
       output$poizvedba_komp <- renderPlot({
@@ -190,7 +204,6 @@ server <- function(input, output) {
 
     } else if (input$characteristic == 8){
       # resujemo problem iskanja najcenejse poti med dvema vozliscema
-      shinyjs::disable("button4")
       
       vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
       output$najceneje <- renderText({
@@ -209,7 +222,6 @@ server <- function(input, output) {
       
     } else if (input$characteristic == 9){
       # resujemo problem minimalne elektricne napeljave
-      shinyjs::disable("button4")
       
       vect_utezi <- as.numeric(unlist(strsplit(input$utezi_3, ",")))
       output$min_cena <- renderText({
@@ -276,14 +288,14 @@ server <- function(input, output) {
         rezultat <- graficnost(stopnje, NULL)
       }
       if (rezultat$obstaja == TRUE){
-        output$graf_zaporedje <- renderText({
+        output$text_11 <- renderText({
           "Iz danih stopenj vozlisc bi lahko sestavil graf. Tu je primer:"
         })
         output$graf_iz_zaporedja <- renderPlot(
           plot(rezultat$primer)
         )
       } else {
-        output$graf_zaporedje <- renderText({      
+        output$text_11 <- renderText({      
           "Graf z danimi stopnjami vozlisc ne obstaja."
         })
         output$graf_iz_zaporedja <- NULL
@@ -339,7 +351,11 @@ server <- function(input, output) {
       output$povezavni <- renderPlot(
         plot(povezavni(df_react$graf$network)$network)
       )
-      
+      if (input$uporabi_line == 1){
+        df_react$graf <- povezavni(df_react$graf$network)
+      } else {
+        df_react$graf <- df_react$graf
+      }
       
       
       
@@ -348,7 +364,11 @@ server <- function(input, output) {
       output$komplementaren <- renderPlot(
         plot(komplement(df_react$graf$network)$network)
       )
-      
+      if (input$uporabi_kompl == 1){
+        df_react$graf <- komplement(df_react$graf$network)
+      } else {
+        df_react$graf <- df_react$graf
+      }
     }
     
     
@@ -356,12 +376,21 @@ server <- function(input, output) {
   })
   
   
+  observeEvent(input$button3,{
+     req(df_react$graf)
+     #df_react$graf <- current_graph()
+     
+     output$graf_v_uporabi <- renderPlot(
+       plot(df_react$graf$network)
+               )
+ 
+               })
   
   
   observeEvent(input$characteristic,{
     # vzamemo graf, ki je trenutno v uporabi
-    df_react$graf <- current_graph()
-    print(df_react$graf$network)
+    req(df_react$graf)
+    #df_react$graf <- current_graph()
  
     if (input$characteristic == 8){
       output$povezave_2 <- renderGvis({
@@ -383,38 +412,19 @@ server <- function(input, output) {
   
   
   
-  ### ZAVIHEK PROBLEMI ###
+  ### ZAVIHEK PROBLEM TRGOVSKEGA POTNIKA ###
   
-
-  current_graph <- reactive({
-  req(df_react$graf)
-  
-  input$shrani1
-  input$shrani2
-  
-  if (input$shrani1){
-  df_react$graf <- povezavni(df_react$graf$network)
-  } 
-  if (input$shrani2){
-  df_react$graf <- komplement(df_react$graf$network)
-  }
-  
-  df_react$graf
-  
-})  
-  
-  
-
   observeEvent(input$problem,{
     # vzamemo graf, ki je trenutno v uporabi
-    df_react$graf <- current_graph()
-    print(df_react$graf$network)
+    req(df_react$graf)
+    #df_react$graf <- current_graph()
+    #print(df_react$graf$network)
        
     
     if (input$problem == 1){
       #resujemo problem trgovskega potnika
       
-      output$text_5 <- renderText({
+      output$text_12 <- renderText({
         "Utezi doloci po vrsti, spodaj prikazanim povezavam iz vozlisc v1 v v2."
       })
       output$povezave_1 <- renderGvis({
@@ -425,8 +435,6 @@ server <- function(input, output) {
     }
     })
   
-  
-
   observeEvent(input$button4, {
       #vzamemo graf, ki je trenutno v uporabi
     req(df_react$graf)
@@ -444,26 +452,26 @@ server <- function(input, output) {
       ### matriko uporabimo kot cene v TSP
       
       if (length(vect_utezi) != length(E(df_react$graf$network))){
-        output$text_6 <- renderText({
+        output$text_13 <- renderText({
           "Ponovno preveri vnos utezi. Vsaki povezavi grafa pripada tocno ena vrednost."
         })
       } else {
-        output$text_6 <- renderText({
+        output$text_13 <- renderText({
           "Super, vsaki povezavi grafa sedaj pripada tocno ena vrednost."
         })
       }
       
       # postavimo omejitev, da graf sploh vsebuje zacetno vozlisce in da ima vsaj 2 originalna soseda, sicer bo obhod zelo drag
       if (input$start > length(E(df_react$graf$network)) | length(neighbors(df_react$graf$network, input$start))<2){
-        output$text_7 <- renderText({
+        output$text_14 <- renderText({
           "Ponovno preveri ustreznost zacetnega vozlisca. Ce ta nima vsaj dveh sosedov v tvojem grafu, bo obhod zelo drag."
         })
       } else {
-        output$text_7 <- renderText({
+        output$text_14 <- renderText({
           paste("Pocakaj, resil ti bom problem TSP.")
         })
       }
-      output$text_8 <- renderText({
+      output$text_15 <- renderText({
         "To je cena najcenejse poti trgovskega potnika:"
       })
       dolzina <- PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
@@ -476,11 +484,11 @@ server <- function(input, output) {
       
       # razlozimo kaj pomeni drag obhod
       if (dolzina > 10000){
-        output$text_9 <- renderText({
+        output$text_16 <- renderText({
             "Graf ima zelo malo povezav, zato najcenejsega obhoda na tvojem grafu ni! Vseeno ti ponujam obhod, ki bi ga uporabil, ce bi dolocene povezave obstajale.."
         })
         } else {
-        output$text_9 <- NULL
+        output$text_16 <- NULL
         }
 
 
