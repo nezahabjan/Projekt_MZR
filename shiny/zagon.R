@@ -1,9 +1,11 @@
 ### to je glavna skripta za zagon aplikacije
 
 #knjiznice, ki jih potrebujemo
+#install.packages("BiocManager")
+#BiocManager::install("RBGL")
 library(RBGL)
 library(igraph)
-library(ggraph)
+#library(ggraph)
 library(networkD3)
 library(shiny)
 library(shinydashboard)
@@ -13,12 +15,12 @@ library(TSP)
 library(pracma)
 library(randomGLM)
 library(googleVis)
-library(colormap)
+#library(colormap)
 library(colortools)
 library(lpSolve)
 library(DiagrammeR)
-library(lightsout)
 library(hash)
+library(PairViz)
 library(eulerian)
 library(shinythemes)
 

@@ -57,12 +57,12 @@ stopnje <- function(graf){
   seznam <- list()
   directed <- is_directed(graf)
   if (directed == "1" | directed == "FALSE"){
-    seznam <- degree(graf)
+    seznam <- igraph::degree(graf)
     return (list("stopnje"=seznam))
     
   } else if (directed == "2" | directed == "TRUE"){
-    seznam$vhodne <- degree(graf, mode= c("in"))
-    seznam$izhodne <- degree(graf, mode= c("out"))
+    seznam$vhodne <- igraph::degree(graf, mode= c("in"))
+    seznam$izhodne <- igraph::degree(graf, mode= c("out"))
     return (list("vhodne" = seznam$vhodne, "izhodne" = seznam$izhodne))
     
   }
@@ -87,7 +87,7 @@ najdi_cikle <- function(graf) {
   Cikli = list()
   for(v1 in V(graf$network)) {
     #gremo po vseh vozliscih grafa in najprej preverimo ali imajo stopnjo >0
-    if(degree(graf$network, v1, mode="in") == 0) { next }
+    if(igraph::degree(graf$network, v1, mode="in") == 0) { next }
     #tedaj zberemo vse sosede tega vozlisca - kjer je povezava iz njega
     dobri_sosedje = neighbors(graf$network, v1, mode="out")
     dobri_sosedje = dobri_sosedje[dobri_sosedje > v1]
@@ -273,7 +273,7 @@ kromaticno_stevilo <- function(g) {
   vse_barve <- c(1:length(V(g)))
   print(vse_barve)
   V(g)$color <- c(0)
-  v_zaporedje <- order(degree(g), decreasing = TRUE)
+  v_zaporedje <- order(igraph::degree(g), decreasing = TRUE)
   print(v_zaporedje)
   "%ni%" <- Negate("%in%")
   lapply(v_zaporedje, function(i) V(g)$color[i] <<- min(vse_barve[vse_barve %ni%
@@ -402,15 +402,14 @@ play_PUL <- function(g,igra, x,y,matrika_stanj, izbor_nadaljevanja){
 #raziskujemo, ali je graf Eulerjev ali ne (ali vsebuje Eulerjev obhod)
 #ali je graf poleulerjev? (ali vsebuje Eulerjev sprehod)
 #s koliko najmanj potezami lahko graf narisemo?
-Euler <- function(g, v1){
+Euler <- function(g){
   graph <- as_graphnel(g)
   min_st_potez <- 0
   komentar <- ""
-  pot <- v1
   cikel <- NULL
   #najprej preverimo obstoj obhoda ali vsaj poti
   if (hasEulerianCycle(graph)==TRUE){
-    cikel <- eulerian(graph, v1)
+    cikel <- eulerian(graph, NULL)
     min_st_potez <- 1
     komentar_cikel <- "Graf je Eulerjev, tu je cikel:"
    } else {
@@ -418,23 +417,18 @@ Euler <- function(g, v1){
     komentar_cikel <- "Tvoj graf ni Eulerjev."
     }
   
-  if (hasEulerianPath(graph, v1)==TRUE){
-      pot <- eulerian(graph, v1)
-      min_st_potez <- 1
-      komentar_pot <- "Graf je Poleulerjev, tu je Eulerjev sprehod."
-    } else {
-      pot <- NULL
-      komentar_pot <- "Tvoj graf nima niti Eulerjevega cikla niti sprehoda z izbranim zacetkom."
-    }
-  
   
   #sedaj poiscimo najmanjse stevilo potez za risanje grafa
   if (min_st_potez ==0){
-    min_st_potez <- stej_liho(degree(g))/2
+    min_st_potez <- stej_liho(igraph::degree(g))/2
   }
 
-  return(list("cikel"=cikel, "pot"=pot, "min_st_potez"=min_st_potez, "komentar_cikel" = komentar_cikel, "komentar_pot"=komentar_pot))
+  return(list("cikel"=cikel,"min_st_potez"=min_st_potez, "komentar_cikel" = komentar_cikel))
 }
+
+
+
+
 #pomozna funkcija za stetje lihih vozlisc grafa
 stej_liho <- function(x) { 
   k <- 0 
