@@ -312,7 +312,7 @@ server <- function(input, output) {
         cikel <- Euler(df_react$graf$network)$cikel
         komentar_cikel <-  Euler(df_react$graf$network)$komentar_cikel
         poteze <- Euler(df_react$graf$network)$min_st_potez
-        komentar <- paste("Minimalno število potez, s katerimi boš narisal svoj graf je", poteze)
+        komentar <- paste("Minimalno število potez, s katerimi boš narisal svoj graf je", poteze, "tu pa je iskani Eulerjev cikel:")
         df_react$ok <- TRUE
       
       output$komentiraj <-renderText({
