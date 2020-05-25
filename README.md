@@ -4,6 +4,8 @@ Projekt temelji na preučevanju glavnih značilnosti grafov in modeliranju probl
 
  ## NAVODILA ZA UPORABNIKA:
 
+* Program je podprt z verzijo 3.5.1 Rstudia.
+
 * Uporabnik zažene skripto zagon.R v mapi shiny -  # tam so zbrane potrebne knjižnice in narejeni sklici na ostale potrebne datoteke s funkcijami
 ###### 1. VNOS
 * Na prvem zavihku "vnos" izbiramo o osnovnih lastnostih grafa, ki ga želimo preučevati. Pri tem lahko v obliki povezavne matrike vnesemo tudi že vnaprej izbran graf ali pa podamo le željeni števili vozlišč in povezav, program pa sam generira naključen graf. - Po izboru kliknemo gumb NARISI.
