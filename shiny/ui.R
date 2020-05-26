@@ -1,4 +1,4 @@
-# tu je ui funkcija
+# tu je ui funkcija, ki se klièe v datoteki zagon.R
 
 body <- dashboardBody(
   tabItems(

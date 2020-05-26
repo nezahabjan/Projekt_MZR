@@ -1,4 +1,4 @@
-# tu je server funkcija
+# tu je server funkcija, ki se klièe v datoteki zagon.R
 
 server <- function(input, output) {
   
