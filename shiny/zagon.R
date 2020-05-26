@@ -24,8 +24,8 @@ library(shinythemes)
 
 #datoteke, na katere se sklicujemo v aplikaciji
 source("../glavne funkcije/funkcije.R")
-source("server_1.R")
-source("ui_1.R")
+source("server.R")
+source("ui.R")
 
 
 #aplikacija shiny
