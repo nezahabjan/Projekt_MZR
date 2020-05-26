@@ -1,4 +1,6 @@
-# tu je ui funkcija, ki se klièe v datoteki zagon.R
+# tu je ui funkcija, ki se kliÄe v datoteki zagon.R
+
+
 
 body <- dashboardBody(
   tabItems(
@@ -9,9 +11,9 @@ body <- dashboardBody(
     tabItem(tabName = "vnos",
             
             fluidRow(sidebarPanel(
-              h3("Dobrodošel v svetu grafov!"),
+              h3("DobrodoÅ¡el v svetu grafov!"),
               box(width=12, title ="VNOS ATRIBUTOV", status = "primary",
-              selectInput("generate", "Naj ti graf generiram jaz, ali imaš e izbranega? ",
+              selectInput("generate", "Naj ti graf generiram jaz, ali imaÅ¡ Å¾e izbranega? ",
                           choices = list("generiraj" = 1,
                                          "imam svoj graf"=2,
                                          "/"=3), selected = 3),
@@ -22,21 +24,21 @@ body <- dashboardBody(
                             choices = list("DA" = 1, "NE" = 2, "/"=3), selected = 3),
                 conditionalPanel(condition = "input.polnost == '1'",
                                  numericInput(inputId = "vozl_1",
-                                              label = "Izberi število vozlišè grafa",
+                                              label = "Izberi Å¡tevilo vozliÅ¡Ä grafa",
                                               value = 0 )),
                 conditionalPanel(condition = "input.polnost == '2'",
                                  numericInput(inputId = "vozl_2",
-                                              label = "Izberi število vozlišè grafa",
+                                              label = "Izberi Å¡tevilo vozliÅ¡Ä grafa",
                                               value = 0 ),
                                  numericInput(inputId = "povez",
-                                              label = "Izberi število povezav grafa",
+                                              label = "Izberi Å¡tevilo povezav grafa",
                                               value = 0 ))
               ),
               
               conditionalPanel(
                 condition = "input.generate == '2'",
                 numericInput(inputId = "vozl_3",
-                             label = "Izberi število vozlišè grafa",
+                             label = "Izberi Å¡tevilo vozliÅ¡Ä grafa",
                              value = 0 ),
                 actionButton("button2", "Vnesi"),
                 textOutput("text_3"),
@@ -44,12 +46,12 @@ body <- dashboardBody(
                 
               ),
               
-              selectInput("dir", "Izberi še usmerjenost grafa",
+              selectInput("dir", "Izberi Å¡e usmerjenost grafa",
                           choices = list("Graf ni usmerjen" = 1,
                                          "Graf je usmerjen" = 2,
                                          "nevem" = 3), selected = 3),
               textOutput("text_1"),
-              actionButton("button1", "Nariši")
+              actionButton("button1", "NariÅ¡i")
             )),
             
             box( 
@@ -70,16 +72,16 @@ body <- dashboardBody(
               selectInput("characteristic", "Izberi iskano lastnost",
                            choices = list("stopnje" = 1, 
                                           "vsebovanost ciklov" = 2,
-                                          "število povezav" = 3,
+                                          "Å¡tevilo povezav" = 3,
                                           "dvodelnost" = 4,
                                           "premer/diameter" = 5,
                                           "polmer/radij" = 6,
                                           "povezanost" = 7,
-                                          "iskanje najcenejše poti" = 8,
+                                          "iskanje najcenejÅ¡e poti" = 8,
                                           "iskanje minimalnega vpetega drevesa"=9,
                                           "barvanje" = 10,
                                           "ravninskost" = 11,
-                                          "grafiènost" = 12,
+                                          "grafiÄnost" = 12,
                                           "Eulerjeve lastnosti" = 13,
                                           "povezavni graf"= 14,
                                           "komplementarni graf" = 15), selected =1),
@@ -87,40 +89,40 @@ body <- dashboardBody(
               
               conditionalPanel(
                 condition = "input.characteristic =='8'",
-                p("Najprej mi moraš podati zaèetek in konec eljene poti"),
-                numericInput(inputId = "zacni", "Vnesi številko vozlišèa, ki naj bo zaèetek poti.", value = 0, min=0),
-                numericInput(inputId = "finish", "Vnesi številko vozlišèa, ki naj bo konec poti.", value = 0, min=0),
-                p("Sedaj pa povezavam v grafu doloèi cene. Vsaka povezava iz spodnjega seznama naj dobi svojo vrednost! Èe cen ne eliš prosim vpiši besedico 'NULL'"),
+                p("Najprej mi moraÅ¡ podati zaÄetek in konec Å¾eljene poti"),
+                numericInput(inputId = "zacni", "Vnesi Å¡tevilko vozliÅ¡Äa, ki naj bo zaÄetek poti.", value = 0, min=0),
+                numericInput(inputId = "finish", "Vnesi Å¡tevilko vozliÅ¡Äa, ki naj bo konec poti.", value = 0, min=0),
+                p("Sedaj pa povezavam v grafu doloÄi cene. Vsaka povezava iz spodnjega seznama naj dobi svojo vrednost! ÄŒe cen ne Å¾eliÅ¡ prosim vpiÅ¡i besedico 'NULL'"),
                 htmlOutput("povezave_2"),
-                textInput("utezi_2", "Vnesi celoštevilske vrednosti, loèene z vejico.", value="")
+                textInput("utezi_2", "Vnesi celoÅ¡tevilske vrednosti, loÄene z vejico.", value="")
               ),
               
               conditionalPanel(
                 condition = "input.characteristic =='9'",
-                p("Za iskanje minimalnega vpetega drevesa bom potreboval utei na posameznih povezavah grafa."),
+                p("Za iskanje minimalnega vpetega drevesa bom potreboval uteÅ¾i na posameznih povezavah grafa."),
                 htmlOutput("edges_3"),
-                textInput("utezi_3", "Vnesi celoštevilske vrednosti, loèene z vejico.", value="")
+                textInput("utezi_3", "Vnesi celoÅ¡tevilske vrednosti, loÄene z vejico.", value="")
               ),
               
               conditionalPanel(
                 condition = "input.characteristic =='12'",
-                p("Za preverjanje grafiènosti poljubnega zaporedja najprej doloèi, ali preverjaš grafiènost za usmerjen ali neusmerjen graf."),
+                p("Za preverjanje grafiÄnosti poljubnega zaporedja najprej doloÄi, ali preverjaÅ¡ grafiÄnost za usmerjen ali neusmerjen graf."),
                 selectInput("graficnost", "Izberi usmerjenost potencialnega grafa!",choices = c("usmerjen"=1,
                                                                                                 "neusmerjen"=2,
                                                                                                 "/"=3), selected =3),
                 conditionalPanel(
                   condition= "input.graficnost == 1",
-                  textInput("in_stopnje", "Vnesi zaporedje vhodnih stopenj, loèenih z vejico.", value=""),
-                  textInput("out_stopnje", "Vnesi zaporedje izhodnih stopenj, loèenih z vejico.", value=""),
+                  textInput("in_stopnje", "Vnesi zaporedje vhodnih stopenj, loÄenih z vejico.", value=""),
+                  textInput("out_stopnje", "Vnesi zaporedje izhodnih stopenj, loÄenih z vejico.", value=""),
                   textOutput("preveri_stopnje")
                 ),
                 conditionalPanel(
                   condition= "input.graficnost == 2",
-                  textInput("stopnje", "Vnesi zaporedje stopenj, loèenih z vejico.", value="")
+                  textInput("stopnje", "Vnesi zaporedje stopenj, loÄenih z vejico.", value="")
                 )
               ),
               
-              actionButton("button3", "Pošlji poizvedbo")
+              actionButton("button3", "PoÅ¡lji poizvedbo")
               
             )),
             
@@ -204,14 +206,14 @@ body <- dashboardBody(
               conditionalPanel(
                 condition = "input.characteristic =='14'",
                 plotOutput("povezavni"),
-                p("Bi rad povezavni graf tvojega grafa uporabljal se naprej?"),
+                p("Bi rad povezavni graf tvojega grafa uporabljal Å¡e naprej?"),
                 selectInput("uporabi_line","Shrani graf", choices = list("da" = 1,"ne" = 2), selected = 2)
               ),
               
               conditionalPanel(
                 condition = "input.characteristic =='15'",
                 plotOutput("komplementaren"),
-                p("Bi rad komplementarni graf tvojega grafa uporabljal se naprej?"),
+                p("Bi rad komplementarni graf tvojega grafa uporabljal Å¡e naprej?"),
                 selectInput("uporabi_kompl","Shrani graf", choices = list("da" = 1,"ne" = 2), selected = 2)
               )
 
@@ -228,23 +230,23 @@ body <- dashboardBody(
             
             fluidRow(sidebarPanel(
               h3("MODELIRANJE PROBLEMA TRGOVSKEGA POTNIKA NA GRAFU"),
-              box (width=12, title = "REŠEVANJE", status = "primary",
+              box (width=12, title = "REÅ EVANJE", status = "primary",
           
-                p("Za zaèetek reševanja problema trgovskega potnika, moraš povezavam doloèiti utei. Te lahko predstavljajo ceno vonje, porabljen èas, energijo, kolièino nafte,..."),
-                actionButton("button5", "Vnos utei"),
+                p("Za zaÄetek reÅ¡evanja problema trgovskega potnika, moraÅ¡ povezavam doloÄiti uteÅ¾i. Te lahko predstavljajo ceno voÅ¾nje, porabljen Äas, energijo, koliÄino nafte,..."),
+                actionButton("button5", "Vnos uteÅ¾i"),
                 textOutput("text_12"),
                 htmlOutput("povezave_1"),
-                textInput("utezi_1", "Vsaka povezava v povezavni matriki naj dobi svojo ute!", value=""),
+                textInput("utezi_1", "Vsaka povezava v povezavni matriki naj dobi svojo uteÅ¾!", value=""),
                 textOutput("text_13"),
-                numericInput("start", "Vnesi vozlišèe, kjer naj trgovski potnik zaène s potjo!", value=0, min=0),
+                numericInput("start", "Vnesi vozliÅ¡Äe, kjer naj trgovski potnik zaÄne s potjo!", value=0, min=0),
                 textOutput("text_14"),
-                actionButton("button4", "Rešitev")
+                actionButton("button4", "ReÅ¡itev")
             )),
             
             
             
             
-            box(title = "REŠITEV PROBLEMA", status = "success",
+            box(title = "REÅ ITEV PROBLEMA", status = "success",
                 textOutput("text_15"),
                 verbatimTextOutput("TSP"),
                 textOutput("text_16"),

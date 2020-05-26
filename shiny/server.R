@@ -1,4 +1,4 @@
-# tu je server funkcija, ki se klièe v datoteki zagon.R
+# tu je server funkcija, ki se kliÄe v datoteki zagon.R
 
 server <- function(input, output) {
   
@@ -27,9 +27,9 @@ server <- function(input, output) {
   observeEvent( input$generate, {
     
     if (input$generate == 1){
-      output$text_2 <- renderText({ "Super, podati mi moraš eljeno število vozlišè in povezav. Lahko si izbereš tudi poln graf." })
+      output$text_2 <- renderText({ "Super, podati mi moraÅ¡ Å¾eljeno Å¡tevilo vozliÅ¡Ä in povezav. Lahko si izbereÅ¡ tudi poln graf." })
     } else if (input$generate == 2){
-      output$text_2 <- renderText({ "Torej moraš vnesti še povezavno matriko svojega grafa." })
+      output$text_2 <- renderText({ "Torej moraÅ¡ vnesti Å¾e povezavno matriko svojega grafa." })
     } else {
       output$text_2 <- renderText({ "Prosim, izpolni zgornje polje!" })
     }
@@ -51,17 +51,17 @@ server <- function(input, output) {
     if (input$vozl_3 > 0 & input$generate == 2){
       
       output$text_3 <- renderText({
-        "Sedaj lahko po vrsticah vneseš elemente povezavne matrike."
+        "Sedaj lahko po vrsticah vneseÅ¡ elemente povezavne matrike."
         })
       
       output$vnos <- renderUI({
         lapply((1:input$vozl_3), function(i) {
-          textInput(paste0("v",i), paste0("v",i), paste("0,0,1,... vnesi",input$vozl_3,"nièel ali enic"))})
+          textInput(paste0("v",i), paste0("v",i), paste("0,0,1,... vnesi",input$vozl_3,"niÄel ali enic"))})
       })
       
     } else {
       output$text_3 <- renderText({
-        "Prosim, ponovno preveri vnešene atribute!"})
+        "Prosim, ponovno preveri vneÅ¡ene atribute!"})
       
     }
   })
@@ -128,7 +128,7 @@ server <- function(input, output) {
       
       if (is_directed(df_react$graf$network)=="TRUE" & DAG(df_react$graf$network) == "TRUE"){
         output$text_5 <- renderText({
-          "Tvoj graf je aciklièen in usmerjen!"
+          "Tvoj graf je acikliÄen in usmerjen!"
            })
       } else {
         output$text_5 <- renderText({
@@ -154,7 +154,7 @@ server <- function(input, output) {
         
         if (bipartite == TRUE){
           output$text_7 <- renderText({
-            "Tvoj graf je dvodelen! Preprièaj se s spodnjim prikazom."
+            "Tvoj graf je dvodelen! PrepriÄaj se s spodnjim prikazom."
           })
           output$poizvedba_dvo <- renderPlot({
             graf <- df_react$graf$network
@@ -208,7 +208,7 @@ server <- function(input, output) {
       vect_utezi <- as.numeric(unlist(strsplit(input$utezi_2, ",")))
       output$najceneje <- renderText({
         dolzina <- najdi_min_pot(df_react$graf$network, input$zacni, input$finish, vect_utezi)$min_dolzina
-        paste("Najcenejša pot stane", dolzina, "enot.")
+        paste("NajcenejÅ¡a pot stane", dolzina, "enot.")
       })
       output$minimum_poti <- renderPlot({
         primer_poti <- najdi_min_pot(df_react$graf$network,input$zacni,input$finish, vect_utezi)$min_primeri
@@ -239,7 +239,7 @@ server <- function(input, output) {
     }  else if (input$characteristic == 10){
       # resujemo problem barvanja grafa
       output$krom_num <- renderText({
-        paste("Tvoj graf lahko obarvamo z najmanj", kromaticno_stevilo(df_react$graf$network)$krom_stevilo, "barvami. Rešitev vidiš spodaj!")
+        paste("Tvoj graf lahko obarvamo z najmanj", kromaticno_stevilo(df_react$graf$network)$krom_stevilo, "barvami. Re?itev vidi? spodaj!")
       })
       output$barvanje <- renderPlot(
         plot(kromaticno_stevilo(df_react$graf$network)$slika)
@@ -253,11 +253,11 @@ server <- function(input, output) {
       # resujemo problem ravninskosti grafa
       if (ravninski(df_react$graf$network)$planar == TRUE){
         output$planarity <- renderText({
-          "Tvoj graf je ravninski. Preprièaj se iz spodnje slike."
+          "Tvoj graf je ravninski. PrepriÄaj se iz spodnje slike."
         })
       } else if (ravninski(df_react$graf$network)$planar == FALSE){
         output$planarity <- renderText({
-          "Tvoj graf ni ravninski. Preprièaj se iz spodnje slike."
+          "Tvoj graf ni ravninski. PrepriÄaj se iz spodnje slike."
         })
       }
       output$ravnina <- renderPlot(
@@ -275,7 +275,7 @@ server <- function(input, output) {
         rezultat <- graficnost(izhodne, vhodne)
         if (length(izhodne) != length(vhodne)){
           output$preveri_stopnje <- renderText({
-            "Ponovno preveri vnos stopenj. Število vhodnih mora biti enako številu izhodnih!"
+            "Ponovno preveri vnos stopenj. ?tevilo vhodnih mora biti enako ?tevilu izhodnih!"
           })
         } else {
           output$preveri_stopnje <- renderText({
@@ -289,14 +289,14 @@ server <- function(input, output) {
       }
       if (rezultat$obstaja == TRUE){
         output$text_11 <- renderText({
-          "Iz danih stopenj vozlišè bi lahko sestavil graf. Tu je primer:"
+          "Iz danih stopenj vozliÅ¡Ä bi lahko sestavil graf. Tu je primer:"
         })
         output$graf_iz_zaporedja <- renderPlot(
           plot(rezultat$primer)
         )
       } else {
         output$text_11 <- renderText({      
-          "Graf z danimi stopnjami vozlišè ne obstaja."
+          "Graf z danimi stopnjami vozliÅ¡Ä ne obstaja."
         })
         output$graf_iz_zaporedja <- NULL
       }
@@ -312,7 +312,7 @@ server <- function(input, output) {
         cikel <- Euler(df_react$graf$network)$cikel
         komentar_cikel <-  Euler(df_react$graf$network)$komentar_cikel
         poteze <- Euler(df_react$graf$network)$min_st_potez
-        komentar <- paste("Minimalno število potez, s katerimi boš narisal svoj graf je", poteze, "tu pa je iskani Eulerjev cikel:")
+        komentar <- paste("Minimalno Å¡tevilo potez, s katerimi boÅ¡ narisal svoj graf je", poteze, "tu pa je iskani Eulerjev cikel:")
         df_react$ok <- TRUE
       
       output$komentiraj <-renderText({
@@ -410,7 +410,7 @@ server <- function(input, output) {
       #resujemo problem trgovskega potnika
       
       output$text_12 <- renderText({
-        "Utei doloèi po vrsti, spodaj prikazanim povezavam iz vozlišè v1 v v2."
+        "UteÅ¾i doloÄi po vrsti, spodaj prikazanim povezavam iz vozliÅ¡Ä v1 v v2."
       })
       output$povezave_1 <- renderGvis({
          data <- as.data.frame(get.edgelist(df_react$graf$network, names=TRUE))
@@ -435,26 +435,26 @@ server <- function(input, output) {
       
       if (length(vect_utezi) != length(E(df_react$graf$network))){
         output$text_13 <- renderText({
-          "Ponovno preveri vnos utei. Vsaki povezavi grafa naj pripada toèno ena vrednost."
+          "Ponovno preveri vnos uteÅ¾i. Vsaki povezavi grafa naj pripada toÄno ena vrednost."
         })
       } else {
         output$text_13 <- renderText({
-          "Super, vsaki povezavi grafa sedaj pripada toèno ena vrednost."
+          "Super, vsaki povezavi grafa sedaj pripada toÄno ena vrednost."
         })
       }
       
       # postavimo omejitev, da graf sploh vsebuje zacetno vozlisce in da ima vsaj 2 originalna soseda, sicer bo obhod zelo drag
       if (input$start > length(E(df_react$graf$network)) | length(neighbors(df_react$graf$network, input$start))<2){
         output$text_14 <- renderText({
-          "Ponovno preveri ustreznost zaèetnega vozlišèa. Èe ta nima vsaj dveh sosedov v tvojem grafu, bo obhod zelo drag."
+          "Ponovno preveri ustreznost zaÄetnega vozliÅ¡Äa. ÄŒe ta nima vsaj dveh sosedov v tvojem grafu, bo obhod zelo drag."
         })
       } else {
         output$text_14 <- renderText({
-          paste("Poèakaj, rešil ti bom problem TSP.")
+          paste("PoÄakaj, reÅ¡il ti bom problem TSP.")
         })
       }
       output$text_15 <- renderText({
-        "To je cena najcenejše poti trgovskega potnika:"
+        "To je cena najcenejÅ¡e poti trgovskega potnika:"
       })
       dolzina <- PTP(df_react$graf$network, input$start, matrika_utezi)$dolzina
       output$TSP <- renderText({
@@ -467,7 +467,7 @@ server <- function(input, output) {
       # razlozimo kaj pomeni drag obhod
       if (dolzina > 10000){
         output$text_16 <- renderText({
-            "Graf ima zelo malo povezav, zato najcenejšega obhoda na tvojem grafu ni! Vseeno ti ponujam obhod, ki bi ga uporabil, èe bi manjkajoèe povezave obstajale.."
+            "Graf ima zelo malo povezav, zato najcenejÅ¡ega obhoda na tvojem grafu ni! Vseeno ti ponujam obhod, ki bi ga uporabil, Äe bi manjkajoÄe povezave obstajale.."
         })
         } else {
         output$text_16 <- NULL
