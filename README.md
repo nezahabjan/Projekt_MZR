@@ -5,7 +5,7 @@ Projekt temelji na preučevanju glavnih značilnosti grafov in modeliranju probl
  ## NAVODILA ZA UPORABNIKA:
 
 * Program je podprt z verzijo 3.5.1 Rstudia.
-* Pred zagonom skripte zagon.R naj uporabnik namesti paket BiocManager, iz katerega potem kliče knjižnico RGBL. To naredi z ukazoma:
+* Pred zagonom skripte zagon.R naj uporabnik namesti paket BiocManager, iz katerega potem kliče knjižnico RBGL. To naredi z ukazoma:
 *install.packages("BiocManager")* in *BiocManager::install("RBGL")*.
 * Uporabnik zažene skripto zagon.R v mapi shiny -  # tam so zbrane potrebne knjižnice in narejeni sklici na ostale potrebne datoteke s funkcijami
 
