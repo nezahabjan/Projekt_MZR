@@ -1,4 +1,4 @@
-# Problemi_na_grafih
+# Problemi na grafih
 
 Projekt temelji na preučevanju glavnih značilnosti grafov in modeliranju problemov z njihovo pomočjo. Uporabnik si zamisli graf, ali pa mu ga generira program, graf se izriše, na njem pa rešujemo probleme, kot so problem trgovskega potnika, iskanje minimalnega vpetega drevesa, barvanja,... S projektom bi rada prikazala uporabnost in zanimivost grafov ter njihovo praktičnost za modeliranje nekaterih povsem vsakdanjih življenjskih problemov.
 
