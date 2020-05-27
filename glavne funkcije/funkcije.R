@@ -78,83 +78,50 @@ povezave <- function(graf) {
 
 
 # D) ali ima nas graf cikle? 
-#funkcija preveri ali je usmerjen graf aciklicen ali ne
-#tretja funkcija poisce vse cikle in jih izpise
-DAG <- function(graf){
-  return(is_dag(graf))
-}
-najdi_cikle <- function(graf) {
-  Cikli = list()
-  for(v1 in V(graf$network)) {
-    #gremo po vseh vozliscih grafa in najprej preverimo ali imajo stopnjo >0
-    if(igraph::degree(graf$network, v1, mode="in") == 0) { next }
-    #tedaj zberemo vse sosede tega vozlisca - kjer je povezava iz njega
-    dobri_sosedje = neighbors(graf$network, v1, mode="out")
+isci_cikle = function(g) {
+  cikli = NULL
+  for(v1 in V(g)) {
+    #vsi ki nimajo vhodnih stopenj, se izločijo
+    if(igraph::degree(g, v1, mode="in") == 0) { next }
+    #izberemo sosede uporabnih vozlišč
+    dobri_sosedje = neighbors(g, v1, mode="out")
     dobri_sosedje = dobri_sosedje[dobri_sosedje > v1]
     for(v2 in dobri_sosedje) {
-      #v vsakem vozliscu med dobrimi sosedi pogledamo enostavne povezave med v1 in v2
-      kandidat = lapply(all_simple_paths(graf$network, v2,v1, mode="out"), function(p) c(v1,p))
-      #obdrzimo pa samo tiste, ki imajo dolzino vecjo kot 3
-      kandidat = kandidat[which(sapply(kandidat, length) > 3)]
-      kandidat = kandidat[sapply(kandidat, min) == sapply(kandidat, `[`, 1)]
-      Cikli <- append(Cikli, kandidat)
+      preizkus = lapply(all_simple_paths(g, v2,v1, mode="out"), function(p) c(v1,p))
+      preizkus = preizkus[which(sapply(preizkus, length) > 3)]
+      preizkus = preizkus[sapply(preizkus, min) == sapply(preizkus, `[`, 1)]
+      cikli  = c(cikli, preizkus)
     }
   }
-  if (length(Cikli)!=0){
-    return(Cikli)
-    
-  } else {
-    print("Graf nima ciklov!")
-    
-  }
+  return(cikli)
 }
-poisci_cikle <- function(g){
-  izbrani_cikli = hash()
-  stevilo <- 0
-  for (i in V(g)){
-    if (length(neighbors(g,i)) > 0){
-    for (j in neighbors(g,i)){
-      
-      if (are_adjacent(g,j,i)){
-        cikli <- all_simple_paths(g,i,j)
-        cikli <- lapply(cikli, function(x) c(j, x))
-        dobri_cikli <- cikli[which(sapply(cikli, length) > 3)]
-        
-        
-        #grem po vseh do sedaj izbranih ciklih
-        #print(izbrani_cikli)
-        #for (cikel in range(1:length(izbrani_cikli))){
-        
-        #ce je kaksen kandidat v dobrih ciklih preverim ali je ta ze izbran ali ne
-        if (length(dobri_cikli)>1){
-          
-          for (kandidat in range(1:length(dobri_cikli))){
-            if (dobri_cikli[kandidat] %in% values(izbrani_cikli)){
-              #print("Ta cikel ze imamo")
-            } else {
-              #print("ta cikel gre med izbrane")
-              stevilo <- stevilo + 1
-              izbrani_cikli[as.character(stevilo)] <- dobri_cikli[kandidat]
-              
-            }
-          }
-        }
-      }
-      
-      
-    }
-    
-    }
-    
-  }
-  if (length(izbrani_cikli)==0){
-    rezultat <- list()
-  } else {
-    rezultat <- values(izbrani_cikli)
-  }
+
+precisti_cikle <- function(seznam){
+  urejeni <- lapply(seznam, sort)
+  indeksi_ven <- c()
+  obdrzi <- list()
   
-  return(rezultat)
+  if (length(urejeni) > 1){
+  for (i in (2:(length(urejeni)))){
+    izbor <- urejeni[1:(i-1)]
+    izbor <- izbor[which(sapply(izbor, length) ==length(urejeni[[i]]))]
+
+    if (urejeni[i] %in% izbor){
+      indeksi_ven <- append(indeksi_ven, i)
+    }
+    
+  }
+    if (length(indeksi_ven)==0){
+      obdrzi <- seznam
+    } else {
+    obdrzi <- seznam[-indeksi_ven]
+    }
+    } else {
+      obdrzi <- seznam
+    }
+  return(obdrzi)
 }
+
 
 
 # F) funkcija vrne najdaljso pot v grafu

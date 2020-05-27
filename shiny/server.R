@@ -118,11 +118,11 @@ server <- function(input, output) {
       
     } else if (input$characteristic == 2){
       output$ciklicnost <- renderText({
-        cikli <- poisci_cikle(df_react$graf$network)
+        cikli <- precisti_cikle(isci_cikle(df_react$graf$network))
         if (length(cikli) == 0){
           paste("Seznam je prazen.. Tvoj graf nima nobenega cikla.")
         } else {
-        paste(cikli)
+        paste(names(cikli), cikli)
          }
         })
       
